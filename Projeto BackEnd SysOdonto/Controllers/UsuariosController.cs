@@ -6,30 +6,59 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System;
 
 namespace Projeto_BackEnd_SysOdonto.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DentistaController : Controller
+    public class UsuariosController : Controller
     {
 
         [HttpPost]
         [Route("cadastrar")]
         [AllowAnonymous]
-        public IActionResult Cadastrar([FromBody] DentistaDTO dentista)
+        public IActionResult Cadastrar([FromBody] CadastroDTO cadastro)
         {
-            var dao = new DentistaDAO();
+            var daodentista = new DentistaDAO();
+            var daorecepcionista = new RecepcionistaDAO();
 
-            bool dentistaExiste = dao.VerificarDentista(dentista);
+            bool dentistaExiste = daodentista.VerificarDentista(cadastro);
             if (dentistaExiste)
             {
                 var mensagem = "E-mail já existe na base de dados";
                 return Conflict(mensagem);
             }
 
-            dao.Cadastrar(dentista);
-            return Ok();
+            bool recepcionistaExiste = daorecepcionista.VerificarRecepcionista(cadastro);
+            if (recepcionistaExiste)
+            {
+                var mensagem = "E-mail já existe na base de dados";
+                return Conflict(mensagem);
+            }
+
+            try
+            {
+
+                if (cadastro.Funcao == "Dentista")
+                {
+                    daodentista.Cadastrar(cadastro);
+                }
+                else if (cadastro.Funcao == "Recepcionista")
+                {
+                    daorecepcionista.Cadastrar(cadastro);
+                }
+                else
+                {
+                    return BadRequest("Função de usuário inválida.");
+                }
+
+                return Ok("Usuário cadastrado com sucesso.");
+            }
+            catch
+            {
+                return StatusCode(500, "Erro ao cadastrar usuário: ");
+            }
         }
 
         [HttpPost]

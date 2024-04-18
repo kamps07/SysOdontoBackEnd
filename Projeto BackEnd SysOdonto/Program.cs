@@ -2,16 +2,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
 var secretKey = "PU8a9W4sv2opkqlOwmgsn3w3Innlc4D5";
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
@@ -30,6 +29,7 @@ builder.Services
         };
     });
 
+var app = builder.Build();
 
 app.UseCors(builder => builder
 .AllowAnyOrigin()

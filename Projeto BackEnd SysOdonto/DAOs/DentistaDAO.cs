@@ -5,7 +5,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 {
     public class DentistaDAO
     {
-        public void Cadastrar(DentistaDTO dentista)
+        public void Cadastrar(CadastroDTO dentista)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
@@ -49,7 +49,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             return dentista;
         }
 
-        internal bool VerificarDentista(DentistaDTO dentista)
+        internal bool VerificarDentista(CadastroDTO cadastro)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
@@ -57,7 +57,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var query = "SELECT * FROM Dentista WHERE email = @email";
 
             var comando = new MySqlCommand(query, conexao);
-            comando.Parameters.AddWithValue("@email", dentista.Email);
+            comando.Parameters.AddWithValue("@email", cadastro.Email);
 
             var dataReader = comando.ExecuteReader();
 
@@ -65,7 +65,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             while (dataReader.Read())
             {
-                dentista = new DentistaDTO();
+                var dentista = new DentistaDTO();
                 dentista.ID = int.Parse(dataReader["ID"].ToString());
                 dentista.Nome = dataReader["Nome"].ToString();
                 dentista.Email = dataReader["Email"].ToString();
