@@ -11,7 +11,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
 var secretKey = "PU8a9W4sv2opkqlOwmgsn3w3Innlc4D5";
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
@@ -31,6 +30,7 @@ builder.Services
     });
 
 
+var app = builder.Build();  
 app.UseCors(builder => builder
 .AllowAnyOrigin()
 .AllowAnyMethod()
