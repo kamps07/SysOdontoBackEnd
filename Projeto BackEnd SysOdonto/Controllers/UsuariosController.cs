@@ -64,37 +64,87 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         [HttpPost]
         [Route("Login")]
         [AllowAnonymous]
-        public IActionResult Login([FromForm] DentistaDTO dentista)
+        public IActionResult Login([FromForm] CadastroDTO cadastro)
         {
-            var dao = new DentistaDAO();
-            var usuarioLogado = dao.Login(dentista);
-
-            if (usuarioLogado.ID == 0)
+            try
             {
-                return Unauthorized();
-            }
-            var token = GenerateJwtToken(usuarioLogado);
+                if (cadastro.Funcao == "Dentista")
+                {
+                    var daodentista = new DentistaDAO();
+                    var dentistaLogado = daodentista.Login(cadastro);
 
-            return Ok(new { token });
+                    if (dentistaLogado.ID == null)
+                        return Unauthorized();
+
+                    var tokenDentista = GenerateJwtTokenDentista(dentistaLogado);
+
+                    return Ok(new { tokenDentista });
+                }
+                else if (cadastro.Funcao == "Recepcionista")
+                {
+                    var daorecepcionista = new RecepcionistaDAO();
+                    var recepcionistaLogado = daorecepcionista.Login(cadastro);
+
+                    if (recepcionistaLogado.ID == null)
+                        return Unauthorized();
+
+                    var tokenRecepcionista = GenerateJwtTokenRecepcionista(recepcionistaLogado);
+
+                    return Ok(new { tokenRecepcionista });
+                }
+                else
+                {
+                    return BadRequest("Função de usuário inválida.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Erro ao fazer login de usuário: " + ex.Message);
+            }
         }
 
-        private string GenerateJwtToken(DentistaDTO dentista)
+
+
+        private string GenerateJwtTokenDentista(DentistaDTO dentista)
         {
             var secretKey = "PU8a9W4sv2opkqlOwmgsn3w3Innlc4D5";
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-                {
-                    new Claim("ID", dentista.ID.ToString()),
-                    new Claim("Email", dentista.Email),
-                };
+    {
+        new Claim("ID", dentista.ID.ToString()),
+        new Claim("Email", dentista.Email),
+    };
 
             var token = new JwtSecurityToken(
-                "APISysOdonto", //Nome da sua api
-                "APISysOdonto", //Nome da sua api
-                claims, //Lista de claims
-                expires: DateTime.UtcNow.AddDays(1), //Tempo de expiração do Token, nesse caso o Token expira em um dia
+                "APISysOdonto", // Nome da sua API
+                "APISysOdonto", // Nome da sua API
+                claims, // Lista de claims
+                expires: DateTime.UtcNow.AddDays(1), // Tempo de expiração do Token
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private string GenerateJwtTokenRecepcionista(RecepcionistaDTO recepcionista)
+        {
+            var secretKey = "PU8a9W4sv2opkqlOwmgsn3w3Innlc4D5";
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+    {
+        new Claim("ID", recepcionista.ID.ToString()),
+        new Claim("Email", recepcionista.Email),
+    };
+
+            var token = new JwtSecurityToken(
+                "APISysOdonto", // Nome da sua API
+                "APISysOdonto", // Nome da sua API
+                claims, // Lista de claims
+                expires: DateTime.UtcNow.AddDays(1), // Tempo de expiração do Token
                 signingCredentials: credentials
             );
 

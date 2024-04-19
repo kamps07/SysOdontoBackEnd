@@ -22,7 +22,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             conexao.Close();
         }
 
-        public DentistaDTO Login(DentistaDTO dentista)
+        public DentistaDTO Login(CadastroDTO cadastro)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
@@ -30,12 +30,12 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var query = "SELECT * FROM Dentista WHERE email = @email and senha = @senha";
 
             var comando = new MySqlCommand(query, conexao);
-            comando.Parameters.AddWithValue("@email", dentista.Email);
-            comando.Parameters.AddWithValue("@senha", dentista.Senha);
+            comando.Parameters.AddWithValue("@email", cadastro.Email);
+            comando.Parameters.AddWithValue("@senha", cadastro.Senha);
 
             var dataReader = comando.ExecuteReader();
 
-            dentista = new DentistaDTO();
+            var dentista = new DentistaDTO();
 
             while (dataReader.Read())
             {

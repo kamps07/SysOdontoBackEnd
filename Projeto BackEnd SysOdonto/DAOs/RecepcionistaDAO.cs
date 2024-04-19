@@ -22,6 +22,33 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             conexao.Close();
         }
 
+        public RecepcionistaDTO Login(CadastroDTO cadastro)
+        {
+            var conexao = ConnectionFactory.Build();
+            conexao.Open();
+
+            var query = "SELECT * FROM Recepcionista WHERE email = @email and senha = @senha";
+
+            var comando = new MySqlCommand(query, conexao);
+            comando.Parameters.AddWithValue("@email", cadastro.Email);
+            comando.Parameters.AddWithValue("@senha", cadastro.Senha);
+
+            var dataReader = comando.ExecuteReader();
+
+            var recepcionista = new RecepcionistaDTO();
+
+            while (dataReader.Read())
+            {
+                recepcionista.ID = int.Parse(dataReader["ID"].ToString());
+                recepcionista.Nome = dataReader["Nome"].ToString();
+                recepcionista.Email = dataReader["Email"].ToString();
+                recepcionista.Senha = dataReader["Senha"].ToString();
+            }
+            conexao.Close();
+
+            return recepcionista;
+        }
+
 
         internal bool VerificarRecepcionista(CadastroDTO cadastro)
         {
@@ -51,5 +78,6 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             return recepcionistas.Count > 0;
         }
+
     }
 }
