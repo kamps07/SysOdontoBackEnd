@@ -13,21 +13,21 @@ namespace Projeto_BackEnd_SysOdonto.Azure
             string connectionString = "";
             string containerName = "";
 
-            // Generate a random name for the image
+            // Gera um nome randomico para imagem
             var fileName = Guid.NewGuid().ToString() + ".jpg";
 
-            // Clear the sent hash
+            // Limpa o hash enviado
             var data = new Regex(@"^data:image\/[a-z]+;base64,").Replace(image, "");
 
-            // Generate a byte array
+            // Gera um array de Bytes
             byte[] imageBytes = Convert.FromBase64String(data);
 
-            // Define the BLOB where the image will be stored
+            // Define o BLOB no qual a imagem será armazenada
             var blobClient = new BlobClient(connectionString, containerName, fileName);
 
             var blobHttpHeader = new BlobHttpHeaders { ContentType = "image/jpg" };
 
-            // Upload the image
+            // Envia a imagem
             using (var stream = new MemoryStream(imageBytes))
             {
                 blobClient.Upload(stream, new BlobUploadOptions()
@@ -36,8 +36,9 @@ namespace Projeto_BackEnd_SysOdonto.Azure
                 });
             }
 
-            // Return the URL of the image
+            // Retorna a URL da imagem
             return blobClient.Uri.AbsoluteUri;
         }
     }
 }
+

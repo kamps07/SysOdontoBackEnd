@@ -16,7 +16,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@nome", clinica.Nome);
             comando.Parameters.AddWithValue("@endereco", clinica.Endereco);
-            comando.Parameters.AddWithValue("@telefone", clinica.Telefone);
+            comando.Parameters.AddWithValue("@telefone", (clinica.Telefone));
             comando.Parameters.AddWithValue("@imgurl", clinica.ImgURL);
             comando.Parameters.AddWithValue("@administrador", clinica.Administrador?.ID); // Assuming Administrador is an object with an ID property
 
