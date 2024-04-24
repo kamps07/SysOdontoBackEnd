@@ -9,7 +9,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
     public class PacienteController : Controller
     {
         [HttpPost]
-        [Route("cadastrarpaciente")]
+        [Route("CadastrarPaciente")]
         public IActionResult Cadastrarpaciente([FromBody] PacienteDTO paciente)
         {
             var dao = new PacienteDAO();
@@ -29,7 +29,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
  
 
         [HttpGet]
-        [Route("listarPacientes")]
+        [Route("ListarPacientes")]
         public IActionResult ListarPaciente(string CPF)
         {
             if (string.IsNullOrEmpty(CPF))
@@ -61,7 +61,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         //}
 
 
-        [HttpPut("alterarPaciente")]
+        [HttpPut("AlterarPaciente")]
         public IActionResult AlterarPaciente([FromBody] PacienteDTO paciente)
         {
             if (paciente == null)
@@ -73,6 +73,37 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             dao.AlterarPaciente(paciente);
             return Ok();
         }
+
+
+        //[HttpDelete]
+        //public IActionResult RemoverProfessor(int id)
+        //{
+        //    var dao = new ProfessoresDAO();
+        //    var materiasProfessor = dao.ListarMateriasProfessor(id);
+
+        //    if (materiasProfessor.Count > 0)
+        //    {
+        //        return BadRequest("Não foi possivel remover o professor");
+        //    }
+
+        //    dao.RemoverProfessor(id);
+
+        //    return Ok();
+        //}
+
+        
+        [HttpDelete]
+        [Route("DeletarPacientes")]
+        public IActionResult RemoverPaciente (PacienteDTO paciente)
+        {
+            var dao = new PacienteDAO();
+
+            dao.RemoverPaciente(paciente.CPF);
+
+            return Ok();
+        }
+
+
 
     }
 }

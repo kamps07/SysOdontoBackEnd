@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using Mysqlx;
 using Projeto_BackEnd_SysOdonto.DTOs;
 using System.Runtime.ConstrainedExecution;
@@ -82,60 +83,65 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
         public PacienteDTO ListarPaciente(string CPF)
         {
-            using (var conexao = ConnectionFactory.Build())
+            var conexao = ConnectionFactory.Build();
+
+            conexao.Open();
+            var query = "SELECT * FROM Paciente WHERE CPF = @cpf";
+
+            var comando = new MySqlCommand(query, conexao);
+
+            comando.Parameters.AddWithValue("@cpf", CPF);
+
+            var dataReader = comando.ExecuteReader();
+
+            if(dataReader.Read())
             {
-                conexao.Open();
-                var query = "SELECT * FROM Paciente WHERE CPF = @cpf";
 
-                using (var comando = new MySqlCommand(query, conexao))
-                {
-                    comando.Parameters.AddWithValue("@cpf", CPF);
-
-                    using (var dataReader = comando.ExecuteReader())
-                    {
-                        if (!dataReader.Read())
-                        {
-
-                            return null;
-                        }
-
-                        var paciente = new PacienteDTO
-                        {
-                            Nome = dataReader["Nome"].ToString(),
-                            DataNascimento = (DateTime)dataReader["DataNascimento"],
-                            Genero = dataReader["Genero"].ToString(),
-                            RG = dataReader["RG"].ToString(),
-                            CPF = dataReader["CPF"].ToString(),
-                            Email = dataReader["Email"].ToString(),
-                            Telefone = dataReader["Telefone"].ToString(),
-                            Profissao = dataReader["Profissao"].ToString(),
-                            Longadouro = dataReader["Longadouro"].ToString(),
-                            Numero = dataReader["Numero"].ToString(),
-                            Complemento = dataReader["Complemento"].ToString(),
-                            CEP = dataReader["CEP"].ToString(),
-                            Bairro = dataReader["Bairro"].ToString(),
-                            Cidade = dataReader["Cidade"].ToString(),
-                            Estado = dataReader["Estado"].ToString(),
-                            NomeResponsavel = dataReader["NomeResponsavel"].ToString(),
-                            NumeroResponsavel = dataReader["NumeroResponsavel"].ToString(),
-                            DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString(),
-                            GrauDeParentesco = dataReader["GrauDeParentesco"].ToString(),
-                            Prontuario = int.Parse(dataReader["Prontuario"].ToString())
-                        };
-
-                        return paciente;
-
-                    }
-
-                }
-
+                return null;
             }
+
+            var paciente = new PacienteDTO
+            {
+                Nome = dataReader["Nome"].ToString(),
+                DataNascimento = (DateTime)dataReader["DataNascimento"],
+                Genero = dataReader["Genero"].ToString(),
+                RG = dataReader["RG"].ToString(),
+                CPF = dataReader["CPF"].ToString(),
+                Email = dataReader["Email"].ToString(),
+                Telefone = dataReader["Telefone"].ToString(),
+                Profissao = dataReader["Profissao"].ToString(),
+                Longadouro = dataReader["Longadouro"].ToString(),
+                Numero = dataReader["Numero"].ToString(),
+                Complemento = dataReader["Complemento"].ToString(),
+                CEP = dataReader["CEP"].ToString(),
+                Bairro = dataReader["Bairro"].ToString(),
+                Cidade = dataReader["Cidade"].ToString(),
+                Estado = dataReader["Estado"].ToString(),
+                NomeResponsavel = dataReader["NomeResponsavel"].ToString(),
+                NumeroResponsavel = dataReader["NumeroResponsavel"].ToString(),
+                DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString(),
+                GrauDeParentesco = dataReader["GrauDeParentesco"].ToString(),
+                Prontuario = int.Parse(dataReader["Prontuario"].ToString())
+            };
+
+            conexao.Close();
+            return paciente;
+
         }
+
+
+        //Modificar função de alteração
+        //Retornar valores  salvo no banco de dados 
+        //Verificar campos que sofreram alteração  
+        //Executar comando UDPATE de alteração apenas no campos que foram alterados 
+
+        
+
 
         public void AlterarPaciente(PacienteDTO paciente)
         {
-            using (var conexao = ConnectionFactory.Build())
-            {
+            var conexao = ConnectionFactory.Build();
+            
                 conexao.Open();
 
                 var query = @"
@@ -185,14 +191,46 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
                 comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
 
-                comando.ExecuteNonQuery(); // Executar o comando SQL
-            }
+                comando.ExecuteNonQuery();
+                conexao.Close();
+
+
         }
 
+        //public void RemoverProfessor(int id)
+        //{
+        //    var conexao = ConnectionFactory.Build();
+        //    conexao.Open();
+
+        //    var query = @"DELETE FROM Professores WHERE ID = @id";
+
+        //    var comando = new MySqlCommand(query, conexao);
+        //    comando.Parameters.AddWithValue("@id", id);
+
+        //    comando.ExecuteNonQuery();
+        //    conexao.Close();
+        //}
 
 
+        public void RemoverPaciente(string CPF)
+        {
+            var conexao = ConnectionFactory.Build();
+
+            conexao.Open();
+            var query = "DELETE FROM Paciente WHERE CPF = @cpf";
+
+            var comando = new MySqlCommand(query, conexao);
+
+            comando.Parameters.AddWithValue("@cpf", CPF);
+
+            var dataReader = comando.ExecuteReader();
+
+            conexao.Close();
+        }
 
     }
+
+
 }
 
-     
+
