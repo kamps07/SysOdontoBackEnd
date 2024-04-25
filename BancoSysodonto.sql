@@ -3,18 +3,45 @@ CREATE DATABASE Sysodonto;
 
 USE Sysodonto;
 
+select * from clinica;
+
+drop table consulta;
+drop table paciente;
+drop table agenda;
+
+SELECT * FROM paciente;
+
+
+
+
 
 CREATE TABLE Paciente (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(100),
     DataNascimento DATE,
-    Genero ENUM('Masculino', 'Feminino', 'Outro'),
-    Telefone VARCHAR(20),
+    Genero varchar(20),
+    RG VARCHAR (100),
+	CPF VARCHAR (11),
     Email VARCHAR(100),
-    Endereco VARCHAR(255),
+    Telefone VARCHAR(11),
+    Profissao VARCHAR(20),
+    Longadouro VARCHAR(20),
+    Numero VARCHAR(5),
+    Complemento VARCHAR(10),
+    CEP VARCHAR(8),
+    Bairro VARCHAR(20),
+    Cidade VARCHAR(20),
+    Estado VARCHAR(20),
+    NomeResponsavel VARCHAR(30),
+    NumeroResponsavel VARCHAR(11),
+    DocumentoResponsavel VARCHAR(20),
+    GrauDeParentesco VARCHAR(20),
     Prontuario INT NOT NULL,
     FOREIGN KEY (Prontuario) REFERENCES Prontuario(ID)
 );
+
+
+
 
 CREATE TABLE Dentista (
     ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -115,3 +142,5 @@ CREATE TABLE Tratamentos (
     Nome VARCHAR(100),
     Descricao TEXT
 );
+
+
