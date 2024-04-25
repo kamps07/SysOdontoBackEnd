@@ -11,7 +11,7 @@ namespace Projeto_BackEnd_SysOdonto.Azure
         public string UploadImage(string image)
         {
             string connectionString = "";
-            string containerName = "";
+            string containerName = "sysodonto";
 
             // Gera um nome randomico para imagem
             var fileName = Guid.NewGuid().ToString() + ".jpg";

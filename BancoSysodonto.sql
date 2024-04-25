@@ -1,19 +1,6 @@
 CREATE DATABASE Sysodonto;
 
-
 USE Sysodonto;
-
-select * from clinica;
-
-drop table consulta;
-drop table paciente;
-drop table agenda;
-
-SELECT * FROM paciente;
-
-
-
-
 
 CREATE TABLE Paciente (
     ID INT PRIMARY KEY AUTO_INCREMENT,
