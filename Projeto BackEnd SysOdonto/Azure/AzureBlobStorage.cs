@@ -10,7 +10,7 @@ namespace Projeto_BackEnd_SysOdonto.Azure
     {
         public string UploadImage(string image)
         {
-            string connectionString = "";
+            string connectionString = "DefaultEndpointsProtocol=https;AccountName=sysodontonuvem;AccountKey=5UqfJe4txu+2cWWFMeNLQYDQIhpMU11ZgLq/fE6X5fP1eRoVucbETGVOjUcLTkL679Xp4oaw2hhJ+AStt7x52w==;EndpointSuffix=core.windows.net";
             string containerName = "sysodonto";
 
             // Gera um nome randomico para imagem

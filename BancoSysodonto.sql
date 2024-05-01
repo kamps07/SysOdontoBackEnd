@@ -1,30 +1,40 @@
 CREATE DATABASE Sysodonto;
 
+select * from administrador;
+select * from paciente;
 USE Sysodonto;
+
+ALTER TABLE paciente DROP DataNascimento;
+
+
+
+
+DELETE FROM paciente WHERE id = 12;
+
+drop table paciente;
+drop table consulta;
 
 CREATE TABLE Paciente (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    Nome VARCHAR(100),
-    DataNascimento DATE,
-    Genero varchar(20),
-    RG VARCHAR (100),
-	CPF VARCHAR (11),
-    Email VARCHAR(100),
-    Telefone VARCHAR(11),
-    Profissao VARCHAR(20),
-    Longadouro VARCHAR(20),
-    Numero VARCHAR(5),
-    Complemento VARCHAR(10),
-    CEP VARCHAR(8),
-    Bairro VARCHAR(20),
-    Cidade VARCHAR(20),
-    Estado VARCHAR(20),
-    NomeResponsavel VARCHAR(30),
-    NumeroResponsavel VARCHAR(11),
-    DocumentoResponsavel VARCHAR(20),
-    GrauDeParentesco VARCHAR(20),
-    Prontuario INT NOT NULL,
-    FOREIGN KEY (Prontuario) REFERENCES Prontuario(ID)
+    Nome VARCHAR(255),
+    DataNascimento datetime,
+    Genero varchar(255),
+    RG VARCHAR (255),
+	CPF VARCHAR (255),
+    Email VARCHAR(255),
+    Telefone VARCHAR(255),
+    Profissao VARCHAR(255),
+    Logradouro VARCHAR(255),
+    Numero VARCHAR(255),
+    Complemento VARCHAR(255),
+    CEP VARCHAR(255),
+    Bairro VARCHAR(255),
+    Cidade VARCHAR(255),
+    Estado VARCHAR(255),
+    NomeResponsavel VARCHAR(255),
+    NumeroResponsavel VARCHAR(255),
+    DocumentoResponsavel VARCHAR(255),
+    GrauDeParentesco VARCHAR(255)
 );
 
 
