@@ -11,13 +11,13 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             conexao.Open();
 
             var query = @"INSERT INTO Clinicas (Nome, Endereco, Telefone, ImagemUrl, Admintrador) VALUES
-                (@nome, @endereco, @telefone, @imgurl, @administrador)";
-
+                (@nome, @endereco, @telefone, @imagem, @administrador)";
+            
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@nome", clinica.Nome);
             comando.Parameters.AddWithValue("@endereco", clinica.Endereco);
             comando.Parameters.AddWithValue("@telefone", (clinica.Telefone));
-            comando.Parameters.AddWithValue("@imgurl", clinica.ImgURL);
+            comando.Parameters.AddWithValue("@imagem", clinica.ImgURL);
             comando.Parameters.AddWithValue("@administrador", clinica.Administrador?.ID); // Assuming Administrador is an object with an ID property
 
             comando.ExecuteNonQuery();
