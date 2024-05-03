@@ -115,7 +115,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
     {
         new Claim("ID", dentista.ID.ToString()),
         new Claim("Email", dentista.Email),
-    };
+    };        
 
             var token = new JwtSecurityToken(
                 "APISysOdonto", // Nome da sua API
