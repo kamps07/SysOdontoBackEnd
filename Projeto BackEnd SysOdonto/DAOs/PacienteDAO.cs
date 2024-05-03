@@ -225,7 +225,11 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var dataReader = comando.ExecuteReader();
 
             conexao.Close();
+
         }
+
+
+
 
     }
 
