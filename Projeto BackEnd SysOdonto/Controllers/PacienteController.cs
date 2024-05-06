@@ -14,6 +14,19 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         {
             var dao = new PacienteDAO();
 
+            if (!dao.EmailValido(paciente.Email))
+            {
+                var mensagem = "O e-mail fornecido é inválido.";
+                return BadRequest(mensagem);
+            }
+
+            if (!dao.CPFValido(paciente.CPF))
+            {
+                var mensagem = "O CPF forncecido é inválido";
+                return BadRequest(mensagem);
+            }
+
+
             bool PacienteExiste = dao.VerificarPaciente(paciente);
             if (PacienteExiste)
             {
@@ -26,9 +39,9 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             return Ok();
         }
 
- 
 
-        [HttpGet]
+
+    [HttpGet]
         [Route("ListarPacientes")]
         public IActionResult ListarPaciente(string CPF)
         {
@@ -50,17 +63,6 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             return Ok(paciente);
         }
 
-        //[HttpPut]
-        //[Route("AtualizarMatricula")]
-        //public IActionResult AtualizarMatricula(int matriculaId, string status)
-        //{
-        //    var dao = new AlunosDAO();
-        //    dao.AtualizarMatricula(matriculaId, status);
-
-        //    return Ok();
-        //}
-
-
         [HttpPut("AlterarPaciente")]
         public IActionResult AlterarPaciente([FromBody] PacienteDTO paciente)
         {
@@ -74,23 +76,6 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             return Ok();
         }
 
-
-        //[HttpDelete]
-        //public IActionResult RemoverProfessor(int id)
-        //{
-        //    var dao = new ProfessoresDAO();
-        //    var materiasProfessor = dao.ListarMateriasProfessor(id);
-
-        //    if (materiasProfessor.Count > 0)
-        //    {
-        //        return BadRequest("Não foi possivel remover o professor");
-        //    }
-
-        //    dao.RemoverProfessor(id);
-
-        //    return Ok();
-        //}
-
         
         [HttpDelete]
         [Route("DeletarPacientes")]
@@ -102,8 +87,6 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
             return Ok();
         }
-
-
 
     }
 }

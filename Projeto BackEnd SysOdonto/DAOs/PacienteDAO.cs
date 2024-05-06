@@ -2,7 +2,9 @@
 using MySql.Data.MySqlClient;
 using Mysqlx;
 using Projeto_BackEnd_SysOdonto.DTOs;
+using System.Net.Mail;
 using System.Runtime.ConstrainedExecution;
+using System.Text.RegularExpressions;
 
 namespace Projeto_BackEnd_SysOdonto.DAOs
 {
@@ -51,6 +53,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             conexao.Close();
         }
 
+       
 
         public bool VerificarPaciente(PacienteDTO paciente)
         {
@@ -65,26 +68,20 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             var dataReader = comando.ExecuteReader();
 
-
             bool pacienteEncontrado = false;
-
 
             if (dataReader.Read())
             {
-
                 pacienteEncontrado = true;
             }
             conexao.Close();
 
-
             return pacienteEncontrado;
         }
-
 
         public PacienteDTO ListarPaciente(string CPF)
         {
             var conexao = ConnectionFactory.Build();
-
             conexao.Open();
             var query = "SELECT * FROM Paciente WHERE CPF = @cpf";
 
@@ -94,9 +91,8 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             var dataReader = comando.ExecuteReader();
 
-            if(dataReader.Read())
+            if (dataReader.Read())
             {
-
                 return null;
             }
 
@@ -126,25 +122,14 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             conexao.Close();
             return paciente;
-
         }
-
-
-        //Modificar função de alteração
-        //Retornar valores  salvo no banco de dados 
-        //Verificar campos que sofreram alteração  
-        //Executar comando UDPATE de alteração apenas no campos que foram alterados 
-
-        
-
 
         public void AlterarPaciente(PacienteDTO paciente)
         {
             var conexao = ConnectionFactory.Build();
-            
-                conexao.Open();
+            conexao.Open();
 
-                var query = @"
+            var query = @"
             UPDATE Paciente 
             SET 
                 Nome = @nome,
@@ -167,54 +152,36 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 GrauDeParentesco = @grauDeParentesco
             WHERE CPF = @cpf";
 
-                var comando = new MySqlCommand(query, conexao);
+            var comando = new MySqlCommand(query, conexao);
 
-                comando.Parameters.AddWithValue("@nome", paciente.Nome);
-                comando.Parameters.AddWithValue("@dataNascimento", paciente.DataNascimento);
-                comando.Parameters.AddWithValue("@genero", paciente.Genero);
-                comando.Parameters.AddWithValue("@rg", paciente.RG);
-                comando.Parameters.AddWithValue("@cpf", paciente.CPF);
-                comando.Parameters.AddWithValue("@email", paciente.Email);
-                comando.Parameters.AddWithValue("@telefone", paciente.Telefone);
-                comando.Parameters.AddWithValue("@profissao", paciente.Profissao);
-                comando.Parameters.AddWithValue("@logradouro", paciente.Logradouro);
-                comando.Parameters.AddWithValue("@numero", paciente.Numero);
-                comando.Parameters.AddWithValue("@complemento", paciente.Complemento);
-                comando.Parameters.AddWithValue("@cep", paciente.CEP);
-                comando.Parameters.AddWithValue("@bairro", paciente.Bairro);
-                comando.Parameters.AddWithValue("@cidade", paciente.Cidade);
-                comando.Parameters.AddWithValue("@estado", paciente.Estado);
-                comando.Parameters.AddWithValue("@nomeResponsavel", paciente.NomeResponsavel);
-                comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
-                comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
-                comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
-                //comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
+            comando.Parameters.AddWithValue("@nome", paciente.Nome);
+            comando.Parameters.AddWithValue("@dataNascimento", paciente.DataNascimento);
+            comando.Parameters.AddWithValue("@genero", paciente.Genero);
+            comando.Parameters.AddWithValue("@rg", paciente.RG);
+            comando.Parameters.AddWithValue("@cpf", paciente.CPF);
+            comando.Parameters.AddWithValue("@email", paciente.Email);
+            comando.Parameters.AddWithValue("@telefone", paciente.Telefone);
+            comando.Parameters.AddWithValue("@profissao", paciente.Profissao);
+            comando.Parameters.AddWithValue("@logradouro", paciente.Logradouro);
+            comando.Parameters.AddWithValue("@numero", paciente.Numero);
+            comando.Parameters.AddWithValue("@complemento", paciente.Complemento);
+            comando.Parameters.AddWithValue("@cep", paciente.CEP);
+            comando.Parameters.AddWithValue("@bairro", paciente.Bairro);
+            comando.Parameters.AddWithValue("@cidade", paciente.Cidade);
+            comando.Parameters.AddWithValue("@estado", paciente.Estado);
+            comando.Parameters.AddWithValue("@nomeResponsavel", paciente.NomeResponsavel);
+            comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
+            comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
+            comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
+            //comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
 
-                comando.ExecuteNonQuery();
-                conexao.Close();
-
-
+            comando.ExecuteNonQuery();
+            conexao.Close();
         }
-
-        //public void RemoverProfessor(int id)
-        //{
-        //    var conexao = ConnectionFactory.Build();
-        //    conexao.Open();
-
-        //    var query = @"DELETE FROM Professores WHERE ID = @id";
-
-        //    var comando = new MySqlCommand(query, conexao);
-        //    comando.Parameters.AddWithValue("@id", id);
-
-        //    comando.ExecuteNonQuery();
-        //    conexao.Close();
-        //}
-
 
         public void RemoverPaciente(string CPF)
         {
             var conexao = ConnectionFactory.Build();
-
             conexao.Open();
             var query = "DELETE FROM Paciente WHERE CPF = @cpf";
 
@@ -225,15 +192,76 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var dataReader = comando.ExecuteReader();
 
             conexao.Close();
-
         }
 
+        public bool EmailValido(string Email)
+        {
+            try
+            {
+                var mailAddress = new MailAddress(Email);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+        }
 
+        public bool CPFValido(string CPF)
+        {
+            // Tornar o CPF em maiúsculas
+            CPF = CPF.ToUpper();
 
+            // Remover caracteres não numéricos do CPF
+            CPF = CPF.Replace(".", "").Replace("-", "");
 
+            // Verificar se o CPF possui 11 dígitos
+            if (CPF.Length != 11)
+            {
+                return false;
+            }
+
+            // Verificar se todos os dígitos são iguais (CPF inválido)
+            if (CPF[0] == CPF[1] && CPF[1] == CPF[2] && CPF[2] == CPF[3] &&
+                CPF[3] == CPF[4] && CPF[4] == CPF[5] && CPF[5] == CPF[6] &&
+                CPF[6] == CPF[7] && CPF[7] == CPF[8] && CPF[8] == CPF[9] &&
+                CPF[9] == CPF[10])
+            {
+                return false;
+            }
+
+            // Calcula o primeiro dígito verificador
+            int soma = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                soma += int.Parse(CPF[i].ToString()) * (10 - i);
+            }
+            int resto = soma % 11;
+            int digitoVerificador1 = resto < 2 ? 0 : 11 - resto;
+
+            // Verifica o primeiro dígito verificador
+            if (int.Parse(CPF[9].ToString()) != digitoVerificador1)
+            {
+                return false;
+            }
+
+            // Calcula o segundo dígito verificador
+            soma = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                soma += int.Parse(CPF[i].ToString()) * (11 - i);
+            }
+            resto = soma % 11;
+            int digitoVerificador2 = resto < 2 ? 0 : 11 - resto;
+
+            // Verifica o segundo dígito verificador
+            if (int.Parse(CPF[10].ToString()) != digitoVerificador2)
+            {
+                return false;
+            }
+
+            // CPF é válido
+            return true;
+        }
     }
-
-
 }
-
-
