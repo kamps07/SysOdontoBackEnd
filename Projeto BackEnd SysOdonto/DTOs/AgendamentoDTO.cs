@@ -7,6 +7,7 @@
         public string Horario { get; set; }
         public DentistaDTO Dentista { get; set; }
         public PacienteDTO Paciente { get; set; }
+        public ClinicaDTO Clinica { get; set; }
         public string Observacoes { get; set; }
         public string Duracao { get; set; }
     }   
