@@ -1,18 +1,21 @@
 CREATE DATABASE Sysodonto;
-
-select * from administrador;
-select * from paciente;
 USE Sysodonto;
 
-ALTER TABLE paciente DROP DataNascimento;
+CREATE TABLE Clinica(
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100),
+    Telefone VARCHAR(255),
+    Endereco  VARCHAR(255),
+    ImgURL varchar(255) DEFAULT NULL
+);
 
-
-
-
-DELETE FROM paciente WHERE id = 12;
-
-drop table paciente;
-drop table consulta;
+CREATE TABLE Administrador (
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  nome varchar(255) NOT NULL,
+  email varchar(255) NOT NULL,
+  senha varchar(255) NOT NULL,
+  cpf varchar(255) NOT NULL 
+);
 
 CREATE TABLE Paciente (
     ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -37,9 +40,6 @@ CREATE TABLE Paciente (
     GrauDeParentesco VARCHAR(255)
 );
 
-
-
-
 CREATE TABLE Dentista (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(100),
@@ -47,48 +47,12 @@ CREATE TABLE Dentista (
     Senha VARCHAR(100)
 );
 
-CREATE TABLE Consulta (
-    ID INT PRIMARY KEY AUTO_INCREMENT,
-    Tratamento INT NOT NULL,
-    Descricao TEXT,
-    Paciente INT NOT NULL,
-    DataHorário DATETIME,
-    Status ENUM('Agendada', 'Cancelada', 'Realizada'),
-    FOREIGN KEY (Tratamento) REFERENCES Tratamentos(ID),
-    FOREIGN KEY (Paciente) REFERENCES Paciente(ID)
-);
-
-
-CREATE TABLE Agenda (
-    ID INT PRIMARY KEY AUTO_INCREMENT,
-    Consulta INT NOT NULL,
-    Dentista INT NOT NULL,
-    FOREIGN KEY (Consulta) REFERENCES Consulta(ID),
-    FOREIGN KEY (Dentista) REFERENCES Dentista(ID)
-);
-
-
 CREATE TABLE Recepcionista (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Nome VARCHAR(100),
     Email VARCHAR(100),
     Senha VARCHAR(100)
 );
-
-
-CREATE TABLE Prontuario (
-    ID INT PRIMARY KEY AUTO_INCREMENT,
-    Anamnese INT NOT NULL,
-    Evolucao INT NOT NULL,
-    Arquivos INT NOT NULL,
-    Documentos INT NOT NULL,
-    Descricao TEXT,
-    FOREIGN KEY (Anamnese) REFERENCES Anamnese(ID),
-    FOREIGN KEY (Evolucao) REFERENCES Evolucao(ID),
-    FOREIGN KEY (Arquivos) REFERENCES Arquivos(ID),
-    FOREIGN KEY (Documentos) REFERENCES Documentos(ID)
-);
-
 
 CREATE TABLE Pagamentos (
     ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -107,7 +71,6 @@ CREATE TABLE Documentos (
     CaminhoArquivo VARCHAR(255),
     DataUpload DATE
 );
-
 
 CREATE TABLE Anamnese (
     ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -139,5 +102,40 @@ CREATE TABLE Tratamentos (
     Nome VARCHAR(100),
     Descricao TEXT
 );
+
+CREATE TABLE Consulta (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Tratamento INT NOT NULL,
+    Descricao TEXT,
+    Paciente INT NOT NULL,
+    DataHorário DATETIME,
+    Status ENUM('Agendada', 'Cancelada', 'Realizada'),
+    FOREIGN KEY (Tratamento) REFERENCES Tratamentos(ID),
+    FOREIGN KEY (Paciente) REFERENCES Paciente(ID)
+);
+
+
+CREATE TABLE Agenda (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Consulta INT NOT NULL,
+    Dentista INT NOT NULL,
+    FOREIGN KEY (Consulta) REFERENCES Consulta(ID),
+    FOREIGN KEY (Dentista) REFERENCES Dentista(ID)
+);
+
+CREATE TABLE Prontuario (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Anamnese INT NOT NULL,
+    Evolucao INT NOT NULL,
+    Arquivos INT NOT NULL,
+    Documentos INT NOT NULL,
+    Descricao TEXT,
+    FOREIGN KEY (Anamnese) REFERENCES Anamnese(ID),
+    FOREIGN KEY (Evolucao) REFERENCES Evolucao(ID),
+    FOREIGN KEY (Arquivos) REFERENCES Arquivos(ID),
+    FOREIGN KEY (Documentos) REFERENCES Documentos(ID)
+);
+
+
 
 

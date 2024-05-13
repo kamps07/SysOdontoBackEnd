@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Projeto_BackEnd_SysOdonto.DAOs;
 using Projeto_BackEnd_SysOdonto.DTOs;
 
@@ -6,6 +7,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PacienteController : Controller
     {
         [HttpPost]
@@ -17,12 +19,6 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             if (!dao.EmailValido(paciente.Email))
             {
                 var mensagem = "O e-mail fornecido é inválido.";
-                return BadRequest(mensagem);
-            }
-
-            if (!dao.CPFValido(paciente.CPF))
-            {
-                var mensagem = "O CPF forncecido é inválido";
                 return BadRequest(mensagem);
             }
 
@@ -43,16 +39,12 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
     [HttpGet]
         [Route("ListarPacientes")]
-        public IActionResult ListarPaciente(string CPF)
+        public IActionResult ListarPaciente()
         {
-            if (string.IsNullOrEmpty(CPF))
-            {
-                var mensagem = "CPF não fornecido.";
-                return BadRequest(mensagem);
-            }
+            var clinicaID = int.Parse(HttpContext.User.FindFirst("clinica")?.Value);
 
             var dao = new PacienteDAO();
-            var paciente = dao.ListarPaciente(CPF);
+            var paciente = dao.ListarPacientes(clinicaID);
 
             if (paciente == null)
             {

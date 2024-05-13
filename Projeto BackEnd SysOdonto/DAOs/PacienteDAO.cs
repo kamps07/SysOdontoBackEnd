@@ -19,12 +19,12 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                         Nome, DataNascimento, Genero, RG, CPF, Email, Telefone,
                         Profissao, Logradouro, Numero, Complemento, CEP,
                         Bairro, Cidade, Estado, NomeResponsavel, NumeroResponsavel,
-                        DocumentoResponsavel, GrauDeParentesco
+                        DocumentoResponsavel, GrauDeParentesco, Clinica
                       ) VALUES (
                         @nome, @dataNascimento, @genero, @rg, @cpf, @email, @telefone,
                         @profissao, @logradouro, @numero, @complemento, @cep,
                         @bairro, @cidade, @estado, @nomeResponsavel, @numeroResponsavel,
-                        @documentoResponsavel, @grauDeParentesco
+                        @documentoResponsavel, @grauDeParentesco, @clinica
                       )";
 
             var comando = new MySqlCommand(query, conexao);
@@ -47,6 +47,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
+            comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
             //comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
 
             comando.ExecuteNonQuery();
@@ -79,49 +80,48 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             return pacienteEncontrado;
         }
 
-        public PacienteDTO ListarPaciente(string CPF)
+        public List<PacienteDTO> ListarPacientes(int clinica)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
-            var query = "SELECT * FROM Paciente WHERE CPF = @cpf";
+            var query = "SELECT*FROM Paciente WHERE Clinica = @clinica";
 
             var comando = new MySqlCommand(query, conexao);
 
-            comando.Parameters.AddWithValue("@cpf", CPF);
+            comando.Parameters.AddWithValue("@clinica", clinica);
 
             var dataReader = comando.ExecuteReader();
 
+            var pacientes = new List<PacienteDTO>();
+
             if (dataReader.Read())
             {
-                return null;
+                var paciente = new PacienteDTO();
+                paciente.Nome = dataReader["Nome"].ToString();
+                paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
+                paciente.Genero = dataReader["Genero"].ToString();
+                paciente.RG = dataReader["RG"].ToString();
+                paciente.CPF = dataReader["CPF"].ToString();
+                paciente.Email = dataReader["Email"].ToString();
+                paciente.Telefone = dataReader["Telefone"].ToString();
+                paciente.Profissao = dataReader["Profissao"].ToString();
+                paciente.Logradouro = dataReader["Logradouro"].ToString();
+                paciente.Numero = dataReader["Numero"].ToString();
+                paciente.Complemento = dataReader["Complemento"].ToString();
+                paciente.CEP = dataReader["CEP"].ToString();
+                paciente.Bairro = dataReader["Bairro"].ToString();
+                paciente.Cidade = dataReader["Cidade"].ToString();
+                paciente.Estado = dataReader["Estado"].ToString();
+                paciente.NomeResponsavel = dataReader["NomeResponsavel"].ToString();
+                paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
+                paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
+                paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+                
+                pacientes.Add(paciente);
             }
 
-            var paciente = new PacienteDTO
-            {
-                Nome = dataReader["Nome"].ToString(),
-                DataNascimento = (DateTime)dataReader["DataNascimento"],
-                Genero = dataReader["Genero"].ToString(),
-                RG = dataReader["RG"].ToString(),
-                CPF = dataReader["CPF"].ToString(),
-                Email = dataReader["Email"].ToString(),
-                Telefone = dataReader["Telefone"].ToString(),
-                Profissao = dataReader["Profissao"].ToString(),
-                Logradouro = dataReader["Logradouro"].ToString(),
-                Numero = dataReader["Numero"].ToString(),
-                Complemento = dataReader["Complemento"].ToString(),
-                CEP = dataReader["CEP"].ToString(),
-                Bairro = dataReader["Bairro"].ToString(),
-                Cidade = dataReader["Cidade"].ToString(),
-                Estado = dataReader["Estado"].ToString(),
-                NomeResponsavel = dataReader["NomeResponsavel"].ToString(),
-                NumeroResponsavel = dataReader["NumeroResponsavel"].ToString(),
-                DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString(),
-                GrauDeParentesco = dataReader["GrauDeParentesco"].ToString(),
-                //Prontuario = int.Parse(dataReader["Prontuario"].ToString())
-            };
-
             conexao.Close();
-            return paciente;
+            return pacientes;
         }
 
         public void AlterarPaciente(PacienteDTO paciente)
