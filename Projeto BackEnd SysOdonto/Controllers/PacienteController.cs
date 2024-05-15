@@ -14,6 +14,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         [Route("CadastrarPaciente")]
         public IActionResult Cadastrarpaciente([FromBody] PacienteDTO paciente)
         {
+            var idClinica = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
             var dao = new PacienteDAO();
 
             if (!dao.EmailValido(paciente.Email))
@@ -29,6 +30,8 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
                 var mensagem = "Paciente já existe na base de dados";
                 return Conflict(mensagem);
             }
+
+            paciente.Clinica = new ClinicaDTO() { ID = idClinica };
 
             // Se o paciente não existe, cadastra e retorna Ok
             dao.CadastrarPaciente(paciente);
