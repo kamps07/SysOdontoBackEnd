@@ -54,7 +54,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             conexao.Close();
         }
 
-       
+
 
         public bool VerificarPaciente(PacienteDTO paciente)
         {
@@ -116,13 +116,14 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
                 paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
                 paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
-                
+
                 pacientes.Add(paciente);
             }
 
             conexao.Close();
             return pacientes;
         }
+
 
         public void AlterarPaciente(PacienteDTO paciente)
         {
@@ -262,6 +263,50 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             // CPF é válido
             return true;
+
+
+
+
+        }
+
+        internal PacienteDTO BuscarPorCPF(string cpf)
+        {
+            var conexao = ConnectionFactory.Build();
+            conexao.Open();
+            var query = "SELECT*FROM Paciente WHERE CPF = @cpf";
+
+            var comando = new MySqlCommand(query, conexao);
+
+            comando.Parameters.AddWithValue("@cpf", cpf);
+
+            var dataReader = comando.ExecuteReader();
+            var paciente = new PacienteDTO();
+
+            if (dataReader.Read())
+            {
+                paciente.Nome = dataReader["Nome"].ToString();
+                paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
+                paciente.Genero = dataReader["Genero"].ToString();
+                paciente.RG = dataReader["RG"].ToString();
+                paciente.CPF = dataReader["CPF"].ToString();
+                paciente.Email = dataReader["Email"].ToString();
+                paciente.Telefone = dataReader["Telefone"].ToString();
+                paciente.Profissao = dataReader["Profissao"].ToString();
+                paciente.Logradouro = dataReader["Logradouro"].ToString();
+                paciente.Numero = dataReader["Numero"].ToString();
+                paciente.Complemento = dataReader["Complemento"].ToString();
+                paciente.CEP = dataReader["CEP"].ToString();
+                paciente.Bairro = dataReader["Bairro"].ToString();
+                paciente.Cidade = dataReader["Cidade"].ToString();
+                paciente.Estado = dataReader["Estado"].ToString();
+                paciente.NomeResponsavel = dataReader["NomeResponsavel"].ToString();
+                paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
+                paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
+                paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+            }
+
+            conexao.Close();
+            return paciente;
         }
     }
 }

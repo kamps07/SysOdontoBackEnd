@@ -37,7 +37,10 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
 
 
-    [HttpGet]
+
+
+
+        [HttpGet]
         [Route("ListarPacientes")]
         public IActionResult ListarPaciente()
         {
@@ -45,6 +48,22 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
             var dao = new PacienteDAO();
             var paciente = dao.ListarPacientes(clinicaID);
+
+            if (paciente == null)
+            {
+                var mensagem = "Paciente não encontrado na base de dados.";
+                return NotFound(mensagem);
+            }
+
+            return Ok(paciente);
+        }
+
+        [HttpGet]
+        [Route("BuscarPorCPF/{cpf}")]
+        public IActionResult BuscarPorCPF(string cpf)
+        {
+            var dao = new PacienteDAO();
+            var paciente = dao.BuscarPorCPF(cpf);
 
             if (paciente == null)
             {
@@ -68,10 +87,10 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             return Ok();
         }
 
-        
+
         [HttpDelete]
         [Route("DeletarPacientes")]
-        public IActionResult RemoverPaciente (PacienteDTO paciente)
+        public IActionResult RemoverPaciente(PacienteDTO paciente)
         {
             var dao = new PacienteDAO();
 
