@@ -48,7 +48,6 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
             comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
-            //comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
 
             comando.ExecuteNonQuery();
             conexao.Close();
@@ -97,6 +96,9 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             if (dataReader.Read())
             {
                 var paciente = new PacienteDTO();
+                paciente.Clinica = new ClinicaDTO();
+
+
                 paciente.Nome = dataReader["Nome"].ToString();
                 paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
                 paciente.Genero = dataReader["Genero"].ToString();
@@ -116,6 +118,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
                 paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
                 paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+                paciente.Clinica.ID = int.Parse(dataReader["Clinica"].ToString());
 
                 pacientes.Add(paciente);
             }

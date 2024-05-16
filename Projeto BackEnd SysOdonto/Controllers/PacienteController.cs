@@ -47,7 +47,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         [Route("ListarPacientes")]
         public IActionResult ListarPaciente()
         {
-            var clinicaID = int.Parse(HttpContext.User.FindFirst("clinica")?.Value);
+            var clinicaID = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
 
             var dao = new PacienteDAO();
             var paciente = dao.ListarPacientes(clinicaID);
