@@ -66,15 +66,29 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         public IActionResult BuscarPorCPF(string cpf)
         {
             var dao = new PacienteDAO();
-            var paciente = dao.BuscarPorCPF(cpf);
+            var pacientes = dao.BuscarPorCPF(cpf);
 
-            if (paciente == null)
+            if (pacientes is null || pacientes.Any() is false)
             {
-                var mensagem = "Paciente não encontrado na base de dados.";
-                return NotFound(mensagem);
+                return NotFound();
             }
 
-            return Ok(paciente);
+            return Ok(pacientes);
+        }
+
+        [HttpGet]
+        [Route("BuscarPorNome/{nome}")]
+        public IActionResult BuscarPorNome(string nome)
+        {
+            var dao = new PacienteDAO();
+            var pacientes = dao.BuscarPorNome(nome);
+
+            if (pacientes is null || pacientes.Any() is false)
+            {
+                return NotFound();
+            }
+
+            return Ok(pacientes);
         }
 
         [HttpPut("AlterarPaciente")]
