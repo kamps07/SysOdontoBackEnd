@@ -48,7 +48,6 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
             comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
-            //comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
 
             comando.ExecuteNonQuery();
             conexao.Close();
@@ -97,6 +96,9 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             if (dataReader.Read())
             {
                 var paciente = new PacienteDTO();
+                paciente.Clinica = new ClinicaDTO();
+
+
                 paciente.Nome = dataReader["Nome"].ToString();
                 paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
                 paciente.Genero = dataReader["Genero"].ToString();
@@ -116,6 +118,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
                 paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
                 paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+                paciente.Clinica.ID = int.Parse(dataReader["Clinica"].ToString());
 
                 pacientes.Add(paciente);
             }
@@ -180,20 +183,20 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             conexao.Close();
         }
 
-        public void RemoverPaciente(string CPF)
-        {
-            var conexao = ConnectionFactory.Build();
-            conexao.Open();
-            var query = "DELETE FROM Paciente WHERE CPF = @cpf";
+        //public void RemoverPaciente(string CPF)
+        //{
+        //    var conexao = ConnectionFactory.Build();
+        //    conexao.Open();
+        //    var query = "DELETE FROM Paciente WHERE CPF = @cpf";
 
-            var comando = new MySqlCommand(query, conexao);
+        //    var comando = new MySqlCommand(query, conexao);
 
-            comando.Parameters.AddWithValue("@cpf", CPF);
+        //    comando.Parameters.AddWithValue("@cpf", CPF);
 
-            var dataReader = comando.ExecuteReader();
+        //    var dataReader = comando.ExecuteReader();
 
-            conexao.Close();
-        }
+        //    conexao.Close();
+        //}
 
         public bool EmailValido(string Email)
         {
@@ -269,21 +272,23 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
         }
 
-        internal PacienteDTO BuscarPorCPF(string cpf)
+        internal List<PacienteDTO> BuscarPorCPF(string cpf)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
-            var query = "SELECT*FROM Paciente WHERE CPF = @cpf";
+            var query = "SELECT * FROM Paciente WHERE CPF = @cpf";
 
             var comando = new MySqlCommand(query, conexao);
 
             comando.Parameters.AddWithValue("@cpf", cpf);
 
             var dataReader = comando.ExecuteReader();
-            var paciente = new PacienteDTO();
+            var pacientes = new List<PacienteDTO>(); 
 
-            if (dataReader.Read())
+            while (dataReader.Read()) 
             {
+                var paciente = new PacienteDTO();
+
                 paciente.Nome = dataReader["Nome"].ToString();
                 paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
                 paciente.Genero = dataReader["Genero"].ToString();
@@ -303,10 +308,57 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
                 paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
                 paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+
+                pacientes.Add(paciente); 
             }
 
             conexao.Close();
-            return paciente;
+            return pacientes; 
         }
+
+        internal List<PacienteDTO> BuscarPorNome(string nome)
+        {
+            var conexao = ConnectionFactory.Build();
+            conexao.Open();
+            var query = "SELECT * FROM Paciente WHERE Nome LIKE CONCAT('%', @nome, '%')";
+
+            var comando = new MySqlCommand(query, conexao);
+            comando.Parameters.AddWithValue("@nome", nome);
+
+            var dataReader = comando.ExecuteReader();
+            var pacientes = new List<PacienteDTO>(); 
+
+            while (dataReader.Read()) 
+            {
+                var paciente = new PacienteDTO();
+
+                paciente.Nome = dataReader["Nome"].ToString();
+                paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
+                paciente.Genero = dataReader["Genero"].ToString();
+                paciente.RG = dataReader["RG"].ToString();
+                paciente.CPF = dataReader["CPF"].ToString();
+                paciente.Email = dataReader["Email"].ToString();
+                paciente.Telefone = dataReader["Telefone"].ToString();
+                paciente.Profissao = dataReader["Profissao"].ToString();
+                paciente.Logradouro = dataReader["Logradouro"].ToString();
+                paciente.Numero = dataReader["Numero"].ToString();
+                paciente.Complemento = dataReader["Complemento"].ToString();
+                paciente.CEP = dataReader["CEP"].ToString();
+                paciente.Bairro = dataReader["Bairro"].ToString();
+                paciente.Cidade = dataReader["Cidade"].ToString();
+                paciente.Estado = dataReader["Estado"].ToString();
+                paciente.NomeResponsavel = dataReader["NomeResponsavel"].ToString();
+                paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
+                paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
+                paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+
+                pacientes.Add(paciente);
+            }
+
+            conexao.Close();
+            return pacientes;
+        }
+
     }
 }
+

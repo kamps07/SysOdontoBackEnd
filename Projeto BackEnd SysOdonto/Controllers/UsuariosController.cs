@@ -56,7 +56,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         [Route("Dentistas")]
         public IActionResult ListarDentistas()
         {
-            var clinicaID = int.Parse(HttpContext.User.FindFirst("clinica")?.Value);
+            var clinicaID = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
             var dao = new UsuarioDAO();
             var dentistas = dao.ListarDentistas(clinicaID);
 
@@ -85,6 +85,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
                 expires: DateTime.UtcNow.AddDays(1), //Tempo de expiração do Token, nesse caso o Token expira em um dia
                 signingCredentials: credentials
             );
+
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

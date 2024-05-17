@@ -49,7 +49,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             return dao;
         }
 
-        public bool VerificarAdministrador(AdministradorDTO administrador)
+        internal bool VerificarAdministrador(AdministradorDTO administrador)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
@@ -57,24 +57,25 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var query = "SELECT * FROM Administrador WHERE CPF = @cpf";
 
             var comando = new MySqlCommand(query, conexao);
-
             comando.Parameters.AddWithValue("@cpf", administrador.CPF);
 
             var dataReader = comando.ExecuteReader();
 
+            var administradores= new List<AdministradorDTO>();
 
-            bool admEncontrado = false;
-
-
-            if (dataReader.Read())
+            while (dataReader.Read())
             {
+                var dao = new AdministradorDTO();
+                dao.ID = int.Parse(dataReader["ID"].ToString());
+                dao.Nome = dataReader["Nome"].ToString();
+                dao.Email = dataReader["Email"].ToString();
+                dao.Senha = dataReader["Senha"].ToString();
 
-                admEncontrado = true;
+                administradores.Add(dao);
             }
             conexao.Close();
 
-
-            return admEncontrado;
+            return administradores.Count > 0;
         }
 
     }

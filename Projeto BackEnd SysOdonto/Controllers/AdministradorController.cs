@@ -15,7 +15,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
     public class AdministradorController : ControllerBase
     {
         [HttpPost]
-        [Route("cadastrar")]
+        [Route("CadastrarAdministrador")]
         [AllowAnonymous]
         public IActionResult Cadastrar([FromBody] AdministradorDTO administrador)
         {
@@ -27,8 +27,6 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
                 var mensagem = "Administrador já existe na base de dados";
                 return Conflict(mensagem);
             }
-
-            // Se o paciente não existe, cadastra e retorna Ok
             dao.Cadastrar(administrador);
             return Ok();
         }
