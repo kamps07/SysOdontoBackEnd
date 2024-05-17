@@ -105,16 +105,17 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         }
 
 
-        [HttpDelete]
-        [Route("DeletarPacientes")]
-        public IActionResult RemoverPaciente(PacienteDTO paciente)
-        {
-            var dao = new PacienteDAO();
+        //[HttpDelete]
+        //[Route("DeletarPacientes/{cpf}")]
+        //public IActionResult RemoverPaciente(PacienteDTO paciente)
+        //{
+        //    var dao = new PacienteDAO();
 
-            dao.RemoverPaciente(paciente.CPF);
+        //    dao.RemoverPaciente(paciente.CPF);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
+        //"BuscarPorCPF/{cpf}"
     }
 }

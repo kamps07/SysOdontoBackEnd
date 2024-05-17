@@ -183,20 +183,20 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             conexao.Close();
         }
 
-        public void RemoverPaciente(string CPF)
-        {
-            var conexao = ConnectionFactory.Build();
-            conexao.Open();
-            var query = "DELETE FROM Paciente WHERE CPF = @cpf";
+        //public void RemoverPaciente(string CPF)
+        //{
+        //    var conexao = ConnectionFactory.Build();
+        //    conexao.Open();
+        //    var query = "DELETE FROM Paciente WHERE CPF = @cpf";
 
-            var comando = new MySqlCommand(query, conexao);
+        //    var comando = new MySqlCommand(query, conexao);
 
-            comando.Parameters.AddWithValue("@cpf", CPF);
+        //    comando.Parameters.AddWithValue("@cpf", CPF);
 
-            var dataReader = comando.ExecuteReader();
+        //    var dataReader = comando.ExecuteReader();
 
-            conexao.Close();
-        }
+        //    conexao.Close();
+        //}
 
         public bool EmailValido(string Email)
         {
