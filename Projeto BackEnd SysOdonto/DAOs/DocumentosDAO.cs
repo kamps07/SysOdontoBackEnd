@@ -1,6 +1,8 @@
 ﻿
 using MySql.Data.MySqlClient;
-using Projeto_BackEnd_SysOdonto.DTOs; 
+using Projeto_BackEnd_SysOdonto.DTOs;
+using System;
+using System.Collections.Generic;
 using static Projeto_BackEnd_SysOdonto.DAOs.DocumentosDTO;
 
 namespace Projeto_BackEnd_SysOdonto.DAOs
@@ -13,7 +15,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             {
                 conexao.Open();
 
-                var query = @"INSERT INTO Documentos (Titulo, Conteudo, PDF) VALUES (@titulo, @conteudo,@pdf)";
+                var query = @"INSERT INTO Documentos (Titulo, Conteudo, PDF) VALUES (@titulo, @conteudo, @pdf)";
 
                 using (var comando = new MySqlCommand(query, conexao))
                 {
@@ -38,13 +40,47 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 {
                     comando.Parameters.AddWithValue("@titulo", titulo);
 
-                    int count = (int)comando.ExecuteScalar();
+                    var count = (Int64)comando.ExecuteScalar();
 
                     return count > 0;
                 }
             }
         }
+
+        public List<DocumentoDTO> ListarDocumentos()
+        {
+            var documentos = new List<DocumentoDTO>();
+
+            using (var conexao = ConnectionFactory.Build())
+            {
+                conexao.Open();
+                var query = "SELECT * FROM Documentos";
+
+                using (var comando = new MySqlCommand(query, conexao))
+                {
+                    using (var dataReader = comando.ExecuteReader())
+                    {
+                        while (dataReader.Read())
+                        {
+                            var documento = new DocumentoDTO
+                            {
+                                Id = Convert.ToInt32(dataReader["Id"]),
+                                Titulo = dataReader["Titulo"].ToString(),
+                                Conteudo = dataReader["Conteudo"].ToString(),
+                                PDF = dataReader["PDF"].ToString()
+                            };
+
+                            documentos.Add(documento);
+                        }
+                    }
+                }
+            }
+
+            return documentos;
+        }
     }
 }
+
+
 
 
