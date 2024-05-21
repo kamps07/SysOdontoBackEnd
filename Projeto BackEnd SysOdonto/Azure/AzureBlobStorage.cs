@@ -39,6 +39,11 @@ namespace Projeto_BackEnd_SysOdonto.Azure
             // Retorna a URL da imagem
             return blobClient.Uri.AbsoluteUri;
         }
+
+        internal string? UploadPdf(string? base64)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
