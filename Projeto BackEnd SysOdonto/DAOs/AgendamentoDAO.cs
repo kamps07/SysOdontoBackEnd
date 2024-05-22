@@ -24,6 +24,34 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.ExecuteNonQuery();
             conexao.Close();
         }
+
+        public void ListarHorariosDoDia(AgendamentoDTO agendamento)
+        {
+            var conexao = ConnectionFactory.Build();
+            conexao.Open();
+
+            //TimeSpan Intervalo = TimeSpan.FromMinutes(30);
+            //TimeSpan horarioInicio = TimeSpan.FromHours(8);
+            //TimeSpan horarioFim = TimeSpan.FromHours(19);
+
+            var query = @"SELECT Horario FROM Agendamento WHERE DataDaConsulta = @data";
+
+
+            var comando = new MySqlCommand(query, conexao);
+
+
+            var dataReader = comando.ExecuteReader();
+
+            var horarios = new List<HorarioDTO>();
+
+            var horario = new HorarioDTO();
+
+            while (dataReader.Read())
+            {
+
+            }
+        }
+
         public bool VerificarAgendamento(AgendamentoDTO agendamento)
         {
             var conexao = ConnectionFactory.Build();

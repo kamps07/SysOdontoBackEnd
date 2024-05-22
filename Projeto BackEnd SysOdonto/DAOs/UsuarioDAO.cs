@@ -102,7 +102,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             var dentistas =  new List<UsuarioDTO>();
 
-            if (dataReader.Read())
+            while (dataReader.Read())
             {
                 var dentista = new UsuarioDTO();
                 dentista.ID = int.Parse(dataReader["ID"].ToString());

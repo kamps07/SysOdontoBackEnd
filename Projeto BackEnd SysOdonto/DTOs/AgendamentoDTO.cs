@@ -3,7 +3,7 @@
     public class AgendamentoDTO
     {
         public int ID { get; set; }
-        public string Data{ get; set; }
+        public DateOnly DataDaConsulta{ get; set; }
         public string Horario { get; set; }
         public DentistaDTO Dentista { get; set; }
         public PacienteDTO Paciente { get; set; }

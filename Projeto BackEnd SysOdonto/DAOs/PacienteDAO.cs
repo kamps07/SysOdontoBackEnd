@@ -93,7 +93,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             var pacientes = new List<PacienteDTO>();
 
-            if (dataReader.Read())
+            while (dataReader.Read())
             {
                 var paciente = new PacienteDTO();
                 paciente.Clinica = new ClinicaDTO();
@@ -272,15 +272,16 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
         }
 
-        internal List<PacienteDTO> BuscarPorCPF(string cpf)
+        internal List<PacienteDTO> BuscarPorCPF(string cpf, int clinica)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
-            var query = "SELECT * FROM Paciente WHERE CPF = @cpf";
+            var query = "SELECT * FROM Paciente WHERE CPF = @cpf AND clinica= @clinica";
 
             var comando = new MySqlCommand(query, conexao);
 
             comando.Parameters.AddWithValue("@cpf", cpf);
+            comando.Parameters.AddWithValue("@clinica", clinica);
 
             var dataReader = comando.ExecuteReader();
             var pacientes = new List<PacienteDTO>(); 
@@ -288,6 +289,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             while (dataReader.Read()) 
             {
                 var paciente = new PacienteDTO();
+                paciente.Clinica = new ClinicaDTO();
 
                 paciente.Nome = dataReader["Nome"].ToString();
                 paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
@@ -308,6 +310,8 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
                 paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
                 paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+                paciente.Clinica.ID = int.Parse(dataReader["Clinica"].ToString());
+
 
                 pacientes.Add(paciente); 
             }
