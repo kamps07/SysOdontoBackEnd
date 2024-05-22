@@ -24,7 +24,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             bool agendamentoExiste = dao.VerificarAgendamento(agendamento);
             if (agendamentoExiste)
             {
-                var mensagem = "Administrador já existe na base de dados";
+                var mensagem = "Agendamento já existe na base de dados";
                 return Conflict(mensagem);
             }
 
