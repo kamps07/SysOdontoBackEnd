@@ -93,7 +93,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             var pacientes = new List<PacienteDTO>();
 
-            if (dataReader.Read())
+            while (dataReader.Read())
             {
                 var paciente = new PacienteDTO();
                 paciente.Clinica = new ClinicaDTO();
