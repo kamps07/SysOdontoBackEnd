@@ -63,13 +63,11 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
         [HttpGet]
         [Route("BuscarPorCPF/{cpf}")]
-        public IActionResult BuscarPorCPF(string cpf, int clinica)
-
-
+        public IActionResult BuscarPorCPF(string cpf)
         {
             var clinicaID = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
             var dao = new PacienteDAO();
-            var pacientes = dao.BuscarPorCPF(cpf, clinica);
+            var pacientes = dao.BuscarPorCPF(cpf, clinicaID);
 
             if (pacientes is null || pacientes.Any() is false)
             {
@@ -82,9 +80,11 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         [HttpGet]
         [Route("BuscarPorNome/{nome}")]
         public IActionResult BuscarPorNome(string nome)
+
         {
+            var clinicaID = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
             var dao = new PacienteDAO();
-            var pacientes = dao.BuscarPorNome(nome);
+            var pacientes = dao.BuscarPorNome(nome, clinicaID);
 
             if (pacientes is null || pacientes.Any() is false)
             {
@@ -96,13 +96,19 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
         [HttpPut("AlterarPaciente")]
         public IActionResult AlterarPaciente([FromBody] PacienteDTO paciente)
+
         {
+            var idClinica = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
+
+            var dao = new PacienteDAO();
+
             if (paciente == null)
             {
                 return BadRequest("Objeto Paciente não pode ser nulo");
             }
 
-            var dao = new PacienteDAO();
+            paciente.Clinica = new ClinicaDTO() { ID = idClinica };
+
             dao.AlterarPaciente(paciente);
             return Ok();
         }

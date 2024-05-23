@@ -47,7 +47,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
-            comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
+            comando.Parameters.AddWithValue("@clinica", paciente.Clinica);
 
             comando.ExecuteNonQuery();
             conexao.Close();
@@ -133,6 +133,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var conexao = ConnectionFactory.Build();
             conexao.Open();
 
+
             var query = @"
             UPDATE Paciente 
             SET 
@@ -154,7 +155,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 NumeroResponsavel = @numeroResponsavel,
                 DocumentoResponsavel = @documentoResponsavel,
                 GrauDeParentesco = @grauDeParentesco
-            WHERE CPF = @cpf";
+            WHERE CPF = @cpf AND clinica =@clinica";
 
             var comando = new MySqlCommand(query, conexao);
 
@@ -177,6 +178,8 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
+            comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
+
             //comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
 
             comando.ExecuteNonQuery();
@@ -320,14 +323,15 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             return pacientes; 
         }
 
-        internal List<PacienteDTO> BuscarPorNome(string nome)
+        internal List<PacienteDTO> BuscarPorNome(string nome, int clinica)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
-            var query = "SELECT * FROM Paciente WHERE Nome LIKE CONCAT('%', @nome, '%')";
+            var query = "SELECT * FROM Paciente WHERE Nome LIKE CONCAT('%', @nome, '%') AND clinica = @clinica";
 
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@nome", nome);
+            comando.Parameters.AddWithValue("@clinica", clinica);
 
             var dataReader = comando.ExecuteReader();
             var pacientes = new List<PacienteDTO>(); 
@@ -335,6 +339,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             while (dataReader.Read()) 
             {
                 var paciente = new PacienteDTO();
+                paciente.Clinica = new ClinicaDTO();
 
                 paciente.Nome = dataReader["Nome"].ToString();
                 paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
@@ -355,6 +360,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 paciente.NumeroResponsavel = dataReader["NumeroResponsavel"].ToString();
                 paciente.DocumentoResponsavel = dataReader["DocumentoResponsavel"].ToString();
                 paciente.GrauDeParentesco = dataReader["GrauDeParentesco"].ToString();
+                paciente.Clinica.ID = int.Parse(dataReader["Clinica"].ToString());
 
                 pacientes.Add(paciente);
             }
