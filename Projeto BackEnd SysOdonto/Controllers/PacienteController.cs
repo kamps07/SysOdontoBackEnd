@@ -63,10 +63,13 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
         [HttpGet]
         [Route("BuscarPorCPF/{cpf}")]
-        public IActionResult BuscarPorCPF(string cpf)
+        public IActionResult BuscarPorCPF(string cpf, int clinica)
+
+
         {
+            var clinicaID = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
             var dao = new PacienteDAO();
-            var pacientes = dao.BuscarPorCPF(cpf);
+            var pacientes = dao.BuscarPorCPF(cpf, clinica);
 
             if (pacientes is null || pacientes.Any() is false)
             {
