@@ -8,18 +8,17 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AgendamentoController : ControllerBase
     {
         [HttpPost]
         [Route("cadastrar")]
-        public IActionResult NovoAgendamento([FromBody] AgendamentoDTO agendamento)
+        public IActionResult CadastrarAgendamento([FromBody] AgendamentoDTO agendamento)
         {
             var idClinica = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
-            var idDentista = int.Parse(HttpContext.User.FindFirst("Dentista")?.Value);
-            var idPaciente = int.Parse(HttpContext.User.FindFirst("Paciente")?.Value);
-
-
             var dao = new AgendamentoDAO();
+
+            agendamento.Clinica = new ClinicaDTO() { ID = idClinica };
 
             bool agendamentoExiste = dao.VerificarAgendamento(agendamento);
             if (agendamentoExiste)
@@ -28,14 +27,22 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
                 return Conflict(mensagem);
             }
 
-            agendamento.Clinica = new ClinicaDTO() { ID = idClinica };
-            agendamento.Dentista = new DentistaDTO() {  ID = idDentista };
-            agendamento.Paciente = new PacienteDTO() {  ID = idPaciente };
 
-
-            // Se o paciente não existe, cadastra e retorna Ok
-            dao.NovoAgendamento(agendamento);
+            dao.CadastrarAgendamento(agendamento);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("ListarHorariosDisponiveis")]
+        
+        public IActionResult ListarHorariosDisponiveis(int dia, int mes, int ano)
+        {
+            var data = new DateOnly(ano, mes, dia);
+            var idUsuario = int.Parse(HttpContext.User.FindFirst("id")?.Value);
+            var dao = new AgendamentoDAO();
+            var horariosDisponiveis = dao.ListarHorariosDisponiveis(data, idUsuario);
+
+            return Ok(horariosDisponiveis);
         }
     }
 }
