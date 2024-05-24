@@ -13,22 +13,20 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
     {
         [HttpPost]
         [Route("cadastrar")]
-        public IActionResult CadastrarAgendamento([FromBody] AgendamentoDTO agendamento)
+        public IActionResult CadastrarAgendamento([FromBody] CriarAgendamentoDTO agendamento)
         {
             var idClinica = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
+
             var dao = new AgendamentoDAO();
 
-            agendamento.Clinica = new ClinicaDTO() { ID = idClinica };
-
-            bool agendamentoExiste = dao.VerificarAgendamento(agendamento);
+            bool agendamentoExiste = dao.VerificarAgendamento(agendamento, idClinica);
             if (agendamentoExiste)
             {
                 var mensagem = "Agendamento já existe na base de dados";
                 return Conflict(mensagem);
             }
 
-
-            dao.CadastrarAgendamento(agendamento);
+            dao.CadastrarAgendamento(agendamento, idClinica);
             return Ok();
         }
 

@@ -5,21 +5,23 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 {
     public class AgendamentoDAO
     {
-        public void CadastrarAgendamento(AgendamentoDTO agendamento)
+        public void CadastrarAgendamento(CriarAgendamentoDTO agendamento, int idClinica)
         {
+            var data = $"{agendamento.Ano}/{agendamento.Mes}/{agendamento.Dia}";
+
             var conexao = ConnectionFactory.Build();
             conexao.Open();
 
-            var query = @"INSERT INTO Agendamento (Usuario, Paciente, DataDaConsulta, Horario, Duracao, Observacoes) VALUES
-						(@dentista,@paciente, @data, @horario, @duracao, @observacoes)";
+            var query = @"INSERT INTO Agendamento (Dentista, Paciente, DataDaConsulta, Horario, Observacao, Clinica) VALUES
+						(@dentista,@paciente, @data, @horario, @observacoes, @clinica)";
 
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@dentista", agendamento.Dentista);
             comando.Parameters.AddWithValue("@paciente", agendamento.Paciente);
-            comando.Parameters.AddWithValue("@data", agendamento.DataDaConsulta);
+            comando.Parameters.AddWithValue("@data", data);
             comando.Parameters.AddWithValue("@horario", agendamento.Horario);
             comando.Parameters.AddWithValue("@observacoes", agendamento.Observacoes);
-            comando.Parameters.AddWithValue("@clinica", agendamento.Clinica.ID);
+            comando.Parameters.AddWithValue("@clinica", idClinica);
 
             comando.ExecuteNonQuery();
             conexao.Close();
@@ -64,8 +66,11 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             return horariosDisponiveis;
         }
 
-        public bool VerificarAgendamento(AgendamentoDTO agendamento)
+        public bool VerificarAgendamento(CriarAgendamentoDTO agendamento, int idClinica)
         {
+            var data = $"{agendamento.Ano}/{agendamento.Mes}/{agendamento.Dia}";
+
+            //COLOCAR CLINICA
             var conexao = ConnectionFactory.Build();
             conexao.Open();
 
@@ -73,7 +78,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             var comando = new MySqlCommand(query, conexao);
 
-            comando.Parameters.AddWithValue("@data", agendamento.DataDaConsulta);
+            comando.Parameters.AddWithValue("@data", data);
             comando.Parameters.AddWithValue("@horario", agendamento.Horario);
 
             var dataReader = comando.ExecuteReader();
