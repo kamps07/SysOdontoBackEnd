@@ -23,6 +23,17 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
                 return BadRequest(mensagem);
             }
 
+            if (!dao.RGValido(paciente.RG))
+            {
+                var mensagem = "O RG fornecido é inválido.";
+                return BadRequest(mensagem);
+            }
+
+            if (!dao.DocumentoResponsavelValido(paciente.DocumentoResponsavel))
+            {
+                var mensagem = "O CPF do Responsável fornecido é inválido.";
+                return BadRequest(mensagem);
+            }
 
             bool PacienteExiste = dao.VerificarPaciente(paciente);
             if (PacienteExiste)

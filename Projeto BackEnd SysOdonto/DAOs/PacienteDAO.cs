@@ -47,7 +47,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
-            comando.Parameters.AddWithValue("@clinica", paciente.Clinica);
+            comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
 
             comando.ExecuteNonQuery();
             conexao.Close();
@@ -274,6 +274,94 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
 
         }
+
+        public bool DocumentoResponsavelValido(string DocumentoResponsavel)
+        {
+            // Tornar o CPF em maiúsculas
+            DocumentoResponsavel = DocumentoResponsavel.ToUpper();
+
+            // Remover caracteres não numéricos do CPF
+            DocumentoResponsavel = DocumentoResponsavel.Replace(".", "").Replace("-", "");
+
+            // Verificar se o CPF possui 11 dígitos
+            if (DocumentoResponsavel.Length != 11)
+            {
+                return false;
+            }
+
+            // Verificar se todos os dígitos são iguais (CPF inválido)
+            if (DocumentoResponsavel[0] == DocumentoResponsavel[1] && DocumentoResponsavel[1] == DocumentoResponsavel[2] && DocumentoResponsavel[2] == DocumentoResponsavel[3] &&
+                DocumentoResponsavel[3] == DocumentoResponsavel[4] && DocumentoResponsavel[4] == DocumentoResponsavel[5] && DocumentoResponsavel[5] == DocumentoResponsavel[6] &&
+                DocumentoResponsavel[6] == DocumentoResponsavel[7] && DocumentoResponsavel[7] == DocumentoResponsavel[8] && DocumentoResponsavel[8] == DocumentoResponsavel[9] &&
+                DocumentoResponsavel[9] == DocumentoResponsavel[10])
+            {
+                return false;
+            }
+
+            // Calcula o primeiro dígito verificador
+            int soma = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                soma += int.Parse(DocumentoResponsavel[i].ToString()) * (10 - i);
+            }
+            int resto = soma % 11;
+            int digitoVerificador1 = resto < 2 ? 0 : 11 - resto;
+
+            // Verifica o primeiro dígito verificador
+            if (int.Parse(DocumentoResponsavel[9].ToString()) != digitoVerificador1)
+            {
+                return false;
+            }
+
+            // Calcula o segundo dígito verificador
+            soma = 0;
+            for (int i = 0; i < 10; i++)
+            {
+                soma += int.Parse(DocumentoResponsavel[i].ToString()) * (11 - i);
+            }
+            resto = soma % 11;
+            int digitoVerificador2 = resto < 2 ? 0 : 11 - resto;
+
+            // Verifica o segundo dígito verificador
+            if (int.Parse(DocumentoResponsavel[10].ToString()) != digitoVerificador2)
+            {
+                return false;
+            }
+
+            // CPF é válido
+            return true;
+
+
+        }
+
+
+
+        public bool RGValido(string RG)
+        {
+            // Verificar se o RG possui 9 dígitos
+            if (RG.Length != 9)
+            {
+                return false;
+            }
+
+            // Verificar se todos os dígitos são iguais (RG inválido)
+            char firstDigit = RG[0];
+            for (int i = 1; i < RG.Length; i++)
+            {
+                if (RG[i] != firstDigit)
+                {
+                    // Se encontrarmos um dígito diferente do primeiro, o RG é válido
+                    return true;
+                }
+            }
+
+            // Se todos os dígitos forem iguais, o RG é inválido
+            return false;
+        }
+
+
+
+
 
         internal List<PacienteDTO> BuscarPorCPF(string cpf, int clinica)
         {
