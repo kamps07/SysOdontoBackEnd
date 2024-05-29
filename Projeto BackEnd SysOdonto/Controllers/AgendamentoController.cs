@@ -42,5 +42,25 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
 
             return Ok(horariosDisponiveis);
         }
+
+        [HttpGet]
+        [Route("ListarAgendamentos")]
+
+        public IActionResult ListarAgendamentos(int dia, int mes, int ano)
+        {
+            var data = new DateTime(ano, mes, dia);
+            var clinicaID = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
+
+            var dao = new AgendamentoDAO();
+            var agendamento = dao.ListarAgendamentos(clinicaID, data);
+
+            if (agendamento == null)
+            {
+                var mensagem = "Agendamento não encontrado na base de dados.";
+                return NotFound(mensagem);
+            }
+
+            return Ok(agendamento);
+        }
     }
 }

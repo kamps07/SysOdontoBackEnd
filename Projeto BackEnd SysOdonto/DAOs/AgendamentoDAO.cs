@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.AspNetCore.Http;
+using MySql.Data.MySqlClient;
 using Projeto_BackEnd_SysOdonto.DTOs;
 
 namespace Projeto_BackEnd_SysOdonto.DAOs
@@ -48,7 +49,6 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 var horaIndisponivel = new TimeOnly(horario.Hours, horario.Minutes, horario.Seconds);
                 horariosIndisponiveis.Add(horaIndisponivel);
             }
-            conexao.Close();
 
             var horariosDisponiveis = new List<string>();
             var horarioInicial = new TimeOnly(08, 00, 00);
@@ -56,12 +56,14 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             while (horarioInicial <= horarioFinal)
             {
-                if(horariosIndisponiveis.Contains(horarioInicial) == false)
+                if (horariosIndisponiveis.Contains(horarioInicial) == false)
                 {
                     horariosDisponiveis.Add(horarioInicial.ToString("HH:mm"));
                 }
                 horarioInicial = horarioInicial.AddMinutes(30);
             }
+            conexao.Close();
+
 
             return horariosDisponiveis;
         }
@@ -70,7 +72,6 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
         {
             var data = $"{agendamento.Ano}/{agendamento.Mes}/{agendamento.Dia}";
 
-            //COLOCAR CLINICA
             var conexao = ConnectionFactory.Build();
             conexao.Open();
 
@@ -97,5 +98,64 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             return agendamentoEncontrado;
         }
+
+        public List<AgendamentoDTO> ListarAgendamentos(int clinica, DateTime data)
+        {
+
+            var conexao = ConnectionFactory.Build();
+            conexao.Open();
+            var query = @"SELECT
+                        A.ID, A.DataDaConsulta, A.Horario, A.Observacao,
+                        D.ID as ID_Dentista, D.Nome as Nome_Dentista,
+                        P.ID as ID_Paciente, P.Nome as Nome_Paciente
+                        FROM Agendamento A
+                        INNER JOIN Usuario D
+                        ON A.Dentista = D.ID
+                        INNER JOIN Paciente P
+                        ON A.Paciente = P.ID
+                            WHERE DataDaConsulta = @data";
+
+            var comando = new MySqlCommand(query, conexao);
+
+            comando.Parameters.AddWithValue("@data", data.ToString("yyyy-MM-dd"));
+            comando.Parameters.AddWithValue("@clinica", clinica);
+
+            var dataReader = comando.ExecuteReader();
+
+            var agendamentos = new List<AgendamentoDTO>();
+
+            while (dataReader.Read())
+            {
+                var agendamento = new AgendamentoDTO();
+                agendamento.Clinica = new ClinicaDTO();
+
+                agendamento.ID = int.Parse(dataReader["ID"].ToString());
+                agendamento.Dentista = new DentistaDTO();
+                agendamento.Paciente = new PacienteDTO();
+
+                var dataHora = DateTime.ParseExact(dataReader["DataDaConsulta"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
+                agendamento.DataDaConsulta = DateOnly.FromDateTime(dataHora);
+
+
+                agendamento.Horario = dataReader["Horario"].ToString();
+                agendamento.Observacoes = dataReader["Observacao"].ToString();
+
+                agendamento.Dentista.ID = int.Parse(dataReader["ID_Dentista"].ToString());
+                agendamento.Dentista.Nome = dataReader["Nome_Dentista"].ToString();
+
+
+                agendamento.Paciente.ID = int.Parse(dataReader["ID_Paciente"].ToString());
+                agendamento.Paciente.Nome = dataReader["Nome_Paciente"].ToString();
+
+                agendamentos.Add(agendamento);
+            }
+
+            conexao.Close();
+            return agendamentos;
+        }
+
+
+
+
     }
 }
