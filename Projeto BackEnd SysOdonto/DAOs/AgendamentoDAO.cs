@@ -13,8 +13,8 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var conexao = ConnectionFactory.Build();
             conexao.Open();
 
-            var query = @"INSERT INTO Agendamento (Dentista, Paciente, DataDaConsulta, Horario, Observacao, Clinica) VALUES
-						(@dentista,@paciente, @data, @horario, @observacoes, @clinica)";
+            var query = @"INSERT INTO Agendamento (Dentista, Paciente, DataDaConsulta, Horario, Observacao, Clinica, Servico) VALUES
+						(@dentista,@paciente, @data, @horario, @observacoes, @clinica, @servico)";
 
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@dentista", agendamento.Dentista);
@@ -22,6 +22,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@data", data);
             comando.Parameters.AddWithValue("@horario", agendamento.Horario);
             comando.Parameters.AddWithValue("@observacoes", agendamento.Observacoes);
+            comando.Parameters.AddWithValue("@servico", agendamento.Servico);
             comando.Parameters.AddWithValue("@clinica", idClinica);
 
             comando.ExecuteNonQuery();
@@ -107,12 +108,15 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var query = @"SELECT
                         A.ID, A.DataDaConsulta, A.Horario, A.Observacao,
                         D.ID as ID_Dentista, D.Nome as Nome_Dentista,
-                        P.ID as ID_Paciente, P.Nome as Nome_Paciente
+                        P.ID as ID_Paciente, P.Nome as Nome_Paciente,
+                        S.ID as ID_Servico, S.Nome as Nome_Servico, S.Duracao
                         FROM Agendamento A
                         INNER JOIN Usuario D
                         ON A.Dentista = D.ID
                         INNER JOIN Paciente P
                         ON A.Paciente = P.ID
+                        INNER JOIN Servico S
+                        ON A.Servico = S.ID
                             WHERE DataDaConsulta = @data";
 
             var comando = new MySqlCommand(query, conexao);
@@ -131,6 +135,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
                 agendamento.ID = int.Parse(dataReader["ID"].ToString());
                 agendamento.Dentista = new DentistaDTO();
+                agendamento.Servico = new ServicoDTO();
                 agendamento.Paciente = new PacienteDTO();
 
                 var dataHora = DateTime.ParseExact(dataReader["DataDaConsulta"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
@@ -146,6 +151,10 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
                 agendamento.Paciente.ID = int.Parse(dataReader["ID_Paciente"].ToString());
                 agendamento.Paciente.Nome = dataReader["Nome_Paciente"].ToString();
+
+                agendamento.Servico.ID = int.Parse(dataReader["ID_Servico"].ToString());
+                agendamento.Servico.Nome = dataReader["Nome_Servico"].ToString();
+                agendamento.Servico.Duracao = int.Parse(dataReader["Duracao"].ToString());
 
                 agendamentos.Add(agendamento);
             }
