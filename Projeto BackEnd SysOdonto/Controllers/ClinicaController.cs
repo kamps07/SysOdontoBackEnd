@@ -17,6 +17,13 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         {
             var dao = new ClinicaDAO();
 
+            bool clinicaExiste = dao.VerificarClinica(clinica);
+            if (clinicaExiste)
+            {
+                var mensagem = "Clínica já existe na base de dados";
+                return Conflict(mensagem);
+            }
+
             var azureBlobStorage = new AzureBlobStorage();
             clinica.ImgURL = azureBlobStorage.UploadImage(clinica.Base64);
 
