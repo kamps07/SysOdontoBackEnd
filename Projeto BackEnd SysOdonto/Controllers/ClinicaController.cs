@@ -30,5 +30,21 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             dao.CadastrarClinica(clinica);
             return Ok();
         }
+
+        [HttpPut]
+        [Route("AlterarClinica")]
+        public IActionResult AlterarClinica([FromBody] ClinicaDTO clinica)
+
+        {
+            var dao = new ClinicaDAO();
+
+            if (clinica == null)
+            {
+                return BadRequest("Clinica não pode ser nula");
+            }
+
+            dao.AlterarClinica(clinica);
+            return Ok();
+        }
     }
 }

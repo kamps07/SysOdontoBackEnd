@@ -50,6 +50,34 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             return clinicas.Count > 0;
         }
+
+        public void AlterarClinica(ClinicaDTO clinica)
+        {
+            var conexao = ConnectionFactory.Build();
+            conexao.Open();
+
+
+            var query = @"
+            UPDATE Clinica
+            SET 
+                Nome = @nome,
+                Telefone = @telefone,
+                Endereco = @endereco,
+                ImgURL = @imgurl,
+            WHERE Nome = @nome AND";
+
+            var comando = new MySqlCommand(query, conexao);
+
+            comando.Parameters.AddWithValue("@nome", clinica.Nome);
+            comando.Parameters.AddWithValue("@telefone", clinica.Telefone);
+            comando.Parameters.AddWithValue("@endereco", clinica.Endereco);
+            comando.Parameters.AddWithValue("@imgurl", clinica.ImgURL);
+
+            //comando.Parameters.AddWithValue("@prontuario", paciente.Prontuario);
+
+            comando.ExecuteNonQuery();
+            conexao.Close();
+        }
     }
 }
  
