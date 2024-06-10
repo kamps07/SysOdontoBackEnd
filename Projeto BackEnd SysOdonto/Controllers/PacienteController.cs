@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Projeto_BackEnd_SysOdonto.DAOs;
 using Projeto_BackEnd_SysOdonto.DTOs;
+using System.Globalization;
 
 namespace Projeto_BackEnd_SysOdonto.Controllers
 {
@@ -12,6 +13,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
     {
         [HttpPost]
         [Route("CadastrarPaciente")]
+
         public IActionResult Cadastrarpaciente([FromBody] PacienteDTO paciente)
         {
             var idClinica = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
@@ -29,14 +31,14 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
                 return BadRequest(mensagem);
             }
 
-            if (!dao.DocumentoResponsavelValido(paciente.DocumentoResponsavel))
+            if (!dao.DocumentoResponsavelNecessario(paciente.DataNascimento, paciente.DocumentoResponsavel))
             {
-                var mensagem = "O CPF do Responsável fornecido é inválido.";
+                var mensagem = "Documento do responsável é necessário e inválido.";
                 return BadRequest(mensagem);
             }
 
-            bool PacienteExiste = dao.VerificarPaciente(paciente);
-            if (PacienteExiste)
+            bool pacienteExiste = dao.VerificarPaciente(paciente);
+            if (pacienteExiste)
             {
                 var mensagem = "Paciente já existe na base de dados";
                 return Conflict(mensagem);
@@ -48,6 +50,7 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
             dao.CadastrarPaciente(paciente);
             return Ok();
         }
+
 
 
 

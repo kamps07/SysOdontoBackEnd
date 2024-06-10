@@ -34,7 +34,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@rg", paciente.RG);
             comando.Parameters.AddWithValue("@cpf", paciente.CPF);
             comando.Parameters.AddWithValue("@email", paciente.Email);
-            comando.Parameters.AddWithValue("@telefone", paciente.Telefone);
+            comando.Parameters.AddWithValue("@telefone", paciente.Telefone.Replace(" ", ""));
             comando.Parameters.AddWithValue("@profissao", paciente.Profissao);
             comando.Parameters.AddWithValue("@logradouro", paciente.Logradouro);
             comando.Parameters.AddWithValue("@numero", paciente.Numero);
@@ -44,7 +44,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@cidade", paciente.Cidade);
             comando.Parameters.AddWithValue("@estado", paciente.Estado);
             comando.Parameters.AddWithValue("@nomeResponsavel", paciente.NomeResponsavel);
-            comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
+            comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel.Replace(" ", ""));
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
             comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
@@ -165,7 +165,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@rg", paciente.RG);
             comando.Parameters.AddWithValue("@cpf", paciente.CPF);
             comando.Parameters.AddWithValue("@email", paciente.Email);
-            comando.Parameters.AddWithValue("@telefone", paciente.Telefone);
+            comando.Parameters.AddWithValue("@telefone", paciente.Telefone.Replace(" ", ""));
             comando.Parameters.AddWithValue("@profissao", paciente.Profissao);
             comando.Parameters.AddWithValue("@logradouro", paciente.Logradouro);
             comando.Parameters.AddWithValue("@numero", paciente.Numero);
@@ -175,7 +175,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             comando.Parameters.AddWithValue("@cidade", paciente.Cidade);
             comando.Parameters.AddWithValue("@estado", paciente.Estado);
             comando.Parameters.AddWithValue("@nomeResponsavel", paciente.NomeResponsavel);
-            comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel);
+            comando.Parameters.AddWithValue("@numeroResponsavel", paciente.NumeroResponsavel.Replace(" ", ""));
             comando.Parameters.AddWithValue("@documentoResponsavel", paciente.DocumentoResponsavel);
             comando.Parameters.AddWithValue("@grauDeParentesco", paciente.GrauDeParentesco);
             comando.Parameters.AddWithValue("@clinica", paciente.Clinica.ID);
@@ -275,25 +275,44 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
         }
 
-        public bool DocumentoResponsavelValido(string DocumentoResponsavel)
+
+        public bool DocumentoResponsavelNecessario(DateTime dataNascimento, string documentoResponsavel)
+        {
+            // Calcula a idade com base na data de nascimento
+            int idade = DateTime.Now.Year - dataNascimento.Year;
+
+            // Ajusta a idade caso o aniversário ainda não tenha ocorrido no ano atual
+            if (dataNascimento.Date > DateTime.Now.AddYears(-idade).Date)
+            {
+                idade--;
+            }
+
+            // Retorna true se a idade for menor que 18 anos e o documento do responsável for válido
+            if (idade < 18)
+            {
+                return DocumentoResponsavelValido(documentoResponsavel);
+            }
+
+            // Retorna false se a idade for maior ou igual a 18 anos
+            return true;
+        }
+
+        public bool DocumentoResponsavelValido(string documentoResponsavel)
         {
             // Tornar o CPF em maiúsculas
-            DocumentoResponsavel = DocumentoResponsavel.ToUpper();
+            documentoResponsavel = documentoResponsavel.ToUpper();
 
             // Remover caracteres não numéricos do CPF
-            DocumentoResponsavel = DocumentoResponsavel.Replace(".", "").Replace("-", "");
+            documentoResponsavel = documentoResponsavel.Replace(".", "").Replace("-", "");
 
             // Verificar se o CPF possui 11 dígitos
-            if (DocumentoResponsavel.Length != 11)
+            if (documentoResponsavel.Length != 11)
             {
                 return false;
             }
 
             // Verificar se todos os dígitos são iguais (CPF inválido)
-            if (DocumentoResponsavel[0] == DocumentoResponsavel[1] && DocumentoResponsavel[1] == DocumentoResponsavel[2] && DocumentoResponsavel[2] == DocumentoResponsavel[3] &&
-                DocumentoResponsavel[3] == DocumentoResponsavel[4] && DocumentoResponsavel[4] == DocumentoResponsavel[5] && DocumentoResponsavel[5] == DocumentoResponsavel[6] &&
-                DocumentoResponsavel[6] == DocumentoResponsavel[7] && DocumentoResponsavel[7] == DocumentoResponsavel[8] && DocumentoResponsavel[8] == DocumentoResponsavel[9] &&
-                DocumentoResponsavel[9] == DocumentoResponsavel[10])
+            if (documentoResponsavel.Distinct().Count() == 1)
             {
                 return false;
             }
@@ -302,13 +321,13 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             int soma = 0;
             for (int i = 0; i < 9; i++)
             {
-                soma += int.Parse(DocumentoResponsavel[i].ToString()) * (10 - i);
+                soma += int.Parse(documentoResponsavel[i].ToString()) * (10 - i);
             }
             int resto = soma % 11;
             int digitoVerificador1 = resto < 2 ? 0 : 11 - resto;
 
             // Verifica o primeiro dígito verificador
-            if (int.Parse(DocumentoResponsavel[9].ToString()) != digitoVerificador1)
+            if (int.Parse(documentoResponsavel[9].ToString()) != digitoVerificador1)
             {
                 return false;
             }
@@ -317,22 +336,21 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             soma = 0;
             for (int i = 0; i < 10; i++)
             {
-                soma += int.Parse(DocumentoResponsavel[i].ToString()) * (11 - i);
+                soma += int.Parse(documentoResponsavel[i].ToString()) * (11 - i);
             }
             resto = soma % 11;
             int digitoVerificador2 = resto < 2 ? 0 : 11 - resto;
 
             // Verifica o segundo dígito verificador
-            if (int.Parse(DocumentoResponsavel[10].ToString()) != digitoVerificador2)
+            if (int.Parse(documentoResponsavel[10].ToString()) != digitoVerificador2)
             {
                 return false;
             }
 
             // CPF é válido
             return true;
-
-
         }
+
 
 
 
