@@ -46,13 +46,14 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         [HttpGet]
         [Route("ListarAgendamentos")]
 
-        public IActionResult ListarAgendamentos(int dia, int mes, int ano)
+        public IActionResult ListarAgendamentos(int diaInicial, int mesInicial, int anoInicial, int diaFinal, int mesFinal, int anoFinal)
         {
-            var data = new DateTime(ano, mes, dia);
+            var dataInicial = new DateTime(anoInicial, mesInicial, diaInicial);
+            var dataFinal= new DateTime(anoFinal, mesFinal, diaFinal);
             var clinicaID = int.Parse(HttpContext.User.FindFirst("Clinica")?.Value);
 
             var dao = new AgendamentoDAO();
-            var agendamento = dao.ListarAgendamentos(clinicaID, data);
+            var agendamento = dao.ListarAgendamentos(clinicaID, dataInicial, dataFinal);
 
             if (agendamento == null)
             {

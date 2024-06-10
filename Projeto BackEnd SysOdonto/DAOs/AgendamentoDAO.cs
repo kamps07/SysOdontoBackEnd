@@ -100,7 +100,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             return agendamentoEncontrado;
         }
 
-        public List<AgendamentoDTO> ListarAgendamentos(int clinica, DateTime data)
+        public List<AgendamentoDTO> ListarAgendamentos(int clinica, DateTime dataInicial, DateTime dataFinal)
         {
 
             var conexao = ConnectionFactory.Build();
@@ -117,11 +117,12 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                         ON A.Paciente = P.ID
                         INNER JOIN Servico S
                         ON A.Servico = S.ID
-                            WHERE DataDaConsulta = @data";
+                            WHERE DataDaConsulta BETWEEN @dataInicial AND @dataFinal";
 
             var comando = new MySqlCommand(query, conexao);
 
-            comando.Parameters.AddWithValue("@data", data.ToString("yyyy-MM-dd"));
+            comando.Parameters.AddWithValue("@dataInicial", dataInicial.ToString("yyyy-MM-dd"));
+            comando.Parameters.AddWithValue("@dataFinal", dataFinal.ToString("yyyy-MM-dd"));
             comando.Parameters.AddWithValue("@clinica", clinica);
 
             var dataReader = comando.ExecuteReader();
