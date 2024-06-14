@@ -11,14 +11,25 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
     public class AnamneseController : ControllerBase
     {
         [HttpPost]
-        [Route("cadastrar")]
+        [Route("CadastrarResposta")]
         [AllowAnonymous]
-        public IActionResult CadastrarAnamnese([FromBody] AnamneseDTO anamnese)
+        public IActionResult CadastrarResposta([FromBody] AnamneseDTO anamnese)
         {
 
             var dao = new AnamneseDAO();
-            dao.Cadastrar(anamnese);
-            return Ok("Anamnese cadastrada com sucesso.");
+            dao.CadastrarResposta(anamnese);
+            return Ok("Resposta cadastrada com sucesso.");
+        }
+
+        [HttpPost]
+        [Route("CadastrarPergunta")]
+        [AllowAnonymous]
+        public IActionResult CadastrarPergunta([FromBody] AnamneseDTO anamnese)
+        {
+
+            var dao = new AnamneseDAO();
+            dao.CadastrarPergunta(anamnese);
+            return Ok("Pergunta cadastrada com sucesso.");
         }
     }
 }

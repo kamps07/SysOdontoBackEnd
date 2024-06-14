@@ -7,6 +7,6 @@ namespace Projeto_BackEnd_SysOdonto.DTOs
         public int ID { get; set; }
         public DateTime Data { get; set; }
         public string Resposta { get; set; }
-        
+        public string Pergunta { get; set; }
     }
 }
