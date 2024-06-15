@@ -400,6 +400,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 var paciente = new PacienteDTO();
                 paciente.Clinica = new ClinicaDTO();
 
+                paciente.ID = int.Parse(dataReader["ID"].ToString());
                 paciente.Nome = dataReader["Nome"].ToString();
                 paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
                 paciente.Genero = dataReader["Genero"].ToString();
@@ -447,6 +448,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                 var paciente = new PacienteDTO();
                 paciente.Clinica = new ClinicaDTO();
 
+                paciente.ID = int.Parse(dataReader["ID"].ToString());
                 paciente.Nome = dataReader["Nome"].ToString();
                 paciente.DataNascimento = (DateTime)dataReader["DataNascimento"];
                 paciente.Genero = dataReader["Genero"].ToString();
