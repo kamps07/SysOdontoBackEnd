@@ -10,12 +10,13 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var conexao = ConnectionFactory.Build();
             conexao.Open();
 
-            var query = @"INSERT INTO resposta (DataAnamnese,  Resposta) VALUES
-						(@data,@resposta)";
+            var query = @"INSERT INTO resposta (DataAnamnese, Resposta, IdPaciente) VALUES
+                  (@data, @resposta, @idpaciente)";
 
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@data", anamnese.Data);
             comando.Parameters.AddWithValue("@resposta", anamnese.Resposta);
+            comando.Parameters.AddWithValue("@idpaciente", anamnese.IdPaciente);
 
             comando.ExecuteNonQuery();
             conexao.Close();
