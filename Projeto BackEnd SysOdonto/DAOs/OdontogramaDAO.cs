@@ -49,7 +49,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                         comando.Parameters.AddWithValue("@tratamento", odontograma.Tratamento);
                         comando.Parameters.AddWithValue("@descricao", odontograma.Descricao);
                         comando.Parameters.AddWithValue("@paciente", odontograma.Paciente);
-                        comando.Parameters.AddWithValue("@status", odontograma.Status);
+                        comando.Parameters.AddWithValue("@status", "Em andamento");
                         comando.Parameters.AddWithValue("@posicao", odontograma.Posicao);
                         comando.Parameters.AddWithValue("@dente", dente);
                         comando.Parameters.AddWithValue("@data", DateTime.Now);
