@@ -13,23 +13,38 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         [HttpPost]
         [Route("CadastrarResposta")]
         [AllowAnonymous]
-        public IActionResult CadastrarResposta([FromBody] AnamneseDTO anamnese)
+        public IActionResult CadastrarResposta([FromBody] RespostaAnamneseDTO anamnese)
         {
-
+            
             var dao = new AnamneseDAO();
             dao.CadastrarResposta(anamnese);
             return Ok("Resposta cadastrada com sucesso.");
         }
 
-        [HttpPost]
-        [Route("CadastrarPergunta")]
-        [AllowAnonymous]
-        public IActionResult CadastrarPergunta([FromBody] AnamneseDTO anamnese)
-        {
+        [HttpGet]
+        [Route("Buscar/{paciente}")]
+        public IActionResult BuscarAnamnse(int paciente)
 
+        {
             var dao = new AnamneseDAO();
-            dao.CadastrarPergunta(anamnese);
-            return Ok("Pergunta cadastrada com sucesso.");
+            var anamnese = dao.ListarAnamneses(paciente);
+
+            return Ok(anamnese);
         }
+
+            private readonly AnamneseDAO _anamneseDao;
+
+            public AnamneseController()
+            {
+                _anamneseDao = new AnamneseDAO(); // Ou use injeção de dependência
+            }
+
+            [HttpGet]
+            [Route("BuscarPergunta")]
+            public IActionResult BuscarPergunta()
+            {
+                var perguntas = _anamneseDao.ListarPerguntas(); // Chame o método aqui
+                return Ok(perguntas);
+            }
     }
 }
