@@ -1,5 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Mysqlx.Session;
+using Projeto_BackEnd_SysOdonto.DTOs;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -40,16 +42,20 @@ namespace Projeto_BackEnd_SysOdonto.Azure
             return blobClient.Uri.AbsoluteUri;
         }
 
-        public string UploadPdf(string pdfBase64)
+        public string UploadArquivo(AdicionarDocumentoDTO documento)
         {
             // Gera um nome randomico para o arquivo PDF
-            var fileName = Guid.NewGuid().ToString() + ".pdf";
+            var fileName = Guid.NewGuid() + "-" + documento.Titulo;
 
             // Limpa o hash enviado se necessário 
-            var data = pdfBase64;
-            if (pdfBase64.StartsWith("data:application/pdf;base64,"))
+            var data = documento.Base64;
+
+            // Verifica se há um cabeçalho de tipo de arquivo no base64
+            var match = Regex.Match(data, @"^data:application\/[a-zA-Z\-\.]+\;base64,");
+            if (match.Success)
             {
-                data = pdfBase64.Replace("data:application/pdf;base64,", "");
+                // Remove o cabeçalho encontrado
+                data = Regex.Replace(data, @"^data:application\/[a-zA-Z\-\.]+\;base64,", "");
             }
 
             // Gera um array de Bytes
@@ -58,7 +64,7 @@ namespace Projeto_BackEnd_SysOdonto.Azure
             // Define o BLOB no qual o arquivo PDF será armazenado
             var blobClient = new BlobClient(connectionString, containerName, fileName);
 
-            var blobHttpHeader = new BlobHttpHeaders { ContentType = "application/pdf" };
+            var blobHttpHeader = new BlobHttpHeaders { ContentType = "file/" + documento.Extensao };
 
             // Envia o arquivo PDF
             using (var stream = new MemoryStream(pdfBytes))

@@ -21,34 +21,25 @@ namespace Projeto_BackEnd_SysOdonto.Controllers
         }
 
         [HttpPost]
-        [Route("InserirDocumento")]
-        public IActionResult InserirDocumento([FromBody] DocumentoDTO documento)
+        public IActionResult InserirDocumento([FromBody] AdicionarDocumentosDTO request)
         {
-            // Verificar se o documento já existe
-            if (_documentosDAO.VerificarDocumentoExistente(documento.Titulo))
+            foreach (var documento in request.Documentos)
             {
-                return Conflict("Documento com o título já existe.");
+                documento.Link = _azureBlobStorage.UploadArquivo(documento);
             }
 
-            // Upload do PDF para o Azure Blob Storage
-            documento.PDF = _azureBlobStorage.UploadPdf(documento.Base64);
-
-            // Inserir o documento no banco de dados
-            _documentosDAO.Inserir(documento);
+            _documentosDAO.Inserir(request);
 
             return Ok("Documento inserido com sucesso.");
         }
 
-        [HttpGet]
-        [Route("ListarDocumentos")]
-        public IActionResult ListarDocumentos()
-        {
-            var documentos = _documentosDAO.ListarDocumentos();
 
-            if (documentos == null || documentos.Count == 0)
-            {
-                return NotFound("Nenhum documento encontrado na base de dados.");
-            }
+
+        [HttpGet]
+        [Route("{paciente}")]
+        public IActionResult ListarDocumentos([FromRoute] int paciente)
+        {
+            var documentos = _documentosDAO.ListarDocumentos(paciente);
 
             return Ok(documentos);
         }
