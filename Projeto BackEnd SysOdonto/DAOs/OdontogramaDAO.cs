@@ -22,7 +22,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                     comando.Parameters.AddWithValue("@tratamento", odontograma.Tratamento);
                     comando.Parameters.AddWithValue("@descricao", odontograma.Descricao);
                     comando.Parameters.AddWithValue("@paciente", odontograma.Paciente);
-                    comando.Parameters.AddWithValue("@status", odontograma.Status);
+                    comando.Parameters.AddWithValue("@status", "Em andamento");
                     comando.Parameters.AddWithValue("@posicao", odontograma.Posicao);
                     comando.Parameters.AddWithValue("@dente", odontograma.Dente);
                     comando.Parameters.AddWithValue("@data", DateTime.Now);
@@ -84,7 +84,7 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                     odontograma.Paciente = int.Parse(dataReader["Paciente"].ToString());
                     odontograma.Status = dataReader["Status"].ToString();
                     odontograma.DataInicio = DateTime.ParseExact(dataReader["DataInicio"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
-                    odontograma.DataFim = string.IsNullOrWhiteSpace(dataReader["DataFim"].ToString()) ? null     : DateTime.ParseExact(dataReader["DataFim"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
+                    odontograma.DataFim = string.IsNullOrWhiteSpace(dataReader["DataFim"].ToString()) ? null : DateTime.ParseExact(dataReader["DataFim"].ToString(), "dd/MM/yyyy HH:mm:ss", null);
                     odontograma.Dente = int.Parse(dataReader["Dente"].ToString());
                     odontograma.Posicao = dataReader["Posicao"].ToString();
 
