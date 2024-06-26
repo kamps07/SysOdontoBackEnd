@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Mysqlx.Crud;
 using Projeto_BackEnd_SysOdonto.DTOs;
 
 namespace Projeto_BackEnd_SysOdonto.DAOs
@@ -15,11 +16,11 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
                 foreach (var resposta in anamnese.Respostas)
                 {
-                    var query = @"INSERT INTO RespostaAnamnese (DataRealizada, Resposta, Pergunta, Anamnese) 
-                          VALUES (@dataRealizada, @resposta, @pergunta, @anamnese)";
+                    var query = @"INSERT INTO RespostaAnamnese (Resposta, Pergunta, Anamnese) 
+                          VALUES (@resposta, @pergunta, @anamnese)";
 
                     var comando = new MySqlCommand(query, conexao);
-                    comando.Parameters.AddWithValue("@dataRealizada", DateTime.Now);
+                    
                     comando.Parameters.AddWithValue("@resposta", resposta.Resposta);
                     comando.Parameters.AddWithValue("@pergunta", resposta.Pergunta);
                     comando.Parameters.AddWithValue("@anamnese", novoIdAnamnese);
@@ -39,12 +40,13 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             {
                 conexao.Open();
 
-                var query = @"INSERT INTO Anamnese (Paciente) VALUES (@idPaciente);
+                var query = @"INSERT INTO Anamnese (Paciente, dataRealizada) VALUES (@idPaciente, @dataRealizada);
               SELECT LAST_INSERT_ID();";
 
                 using (var comando = new MySqlCommand(query, conexao))
                 {
                     comando.Parameters.AddWithValue("@idPaciente", anamnese.Paciente);
+                    comando.Parameters.AddWithValue("@dataRealizada", DateTime.Now);
 
                     novoId = Convert.ToInt32(comando.ExecuteScalar());
                 }
@@ -74,19 +76,17 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
         public List<RespostaDTO> ListarRespostas(int? id)
         {
-
             var conexao = ConnectionFactory.Build();
             conexao.Open();
             var query = @"
-
-                SELECT 
-                    Pergunta.valor, 
-                    RespostaAnamnese.Resposta 
-                FROM 
-                    RespostaAnamnese 
-                    INNER JOIN Pergunta ON RespostaAnamnese.pergunta = Pergunta.ID
-                WHERE 
-                    RespostaAnamnese.anamnese = @id;";
+        SELECT 
+            Pergunta.valor,
+            RespostaAnamnese.Resposta 
+        FROM 
+            RespostaAnamnese 
+            INNER JOIN Pergunta ON RespostaAnamnese.pergunta = Pergunta.ID
+        WHERE 
+            RespostaAnamnese.anamnese = @id;";
 
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@id", id);
@@ -94,45 +94,41 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
             var dataReader = comando.ExecuteReader();
             var respostas = new List<RespostaDTO>();
 
-
             while (dataReader.Read())
             {
-
                 var resposta = new RespostaDTO();
                 resposta.Resposta = dataReader["Resposta"].ToString();
-                resposta.Pergunta= dataReader["Valor"].ToString();
-
+                resposta.Pergunta = dataReader["valor"].ToString();
                 respostas.Add(resposta);
-
             }
 
             conexao.Close();
 
             return respostas;
-
         }
-
-
 
         public List<RespostaAnamneseDTO> ListarAnamneses(int? pacienteId)
         {
             var conexao = ConnectionFactory.Build();
             conexao.Open();
             var query = @"
-    SELECT 
-        RespostaAnamnese.ID AS ID_RespostaAnamnese, 
-        RespostaAnamnese.DataRealizada, 
-        RespostaAnamnese.Resposta, 
-        RespostaAnamnese.Pergunta, 
-        Anamnese.ID AS ID_Anamnese
-    FROM 
-        RespostaAnamnese 
-        INNER JOIN Anamnese ON RespostaAnamnese.anamnese = Anamnese.ID
-    WHERE 
-        Anamnese.paciente = @paciente
-        
-        ORDER BY 
-    RespostaAnamnese.DataRealizada DESC;";
+                SELECT 
+                    Anamnese.ID AS ID_Anamnese,
+                    Anamnese.dataRealizada,
+                    RespostaAnamnese.ID AS ID_RespostaAnamnese,
+                    RespostaAnamnese.Pergunta,
+                    Pergunta.valor,
+	                RespostaAnamnese.Resposta
+  
+                FROM 
+                    RespostaAnamnese
+                    INNER JOIN Anamnese ON RespostaAnamnese.anamnese = Anamnese.ID
+                    INNER JOIN Pergunta ON RespostaAnamnese.Pergunta = Pergunta.ID
+                WHERE 
+                    Anamnese.paciente = @paciente
+                ORDER BY 
+                    Anamnese.dataRealizada DESC;
+";
 
             var comando = new MySqlCommand(query, conexao);
             comando.Parameters.AddWithValue("@paciente", pacienteId);
@@ -142,27 +138,28 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
 
             while (dataReader.Read())
             {
-                var anamnese = new RespostaAnamneseDTO();
-                var respostas = new List<RespostaDTO>();
+                int anamneseId = Convert.ToInt32(dataReader["ID_Anamnese"]);
+                var anamnese = anamneses.FirstOrDefault(a => a.Anamnese == anamneseId);
 
-                anamnese.ID = Convert.ToInt32(dataReader["ID_RespostaAnamnese"]);
-                anamnese.DataRealizada = Convert.ToDateTime(dataReader["DataRealizada"]);
-
-                // Verifica se o valor de ID_Anamnese não é DBNull (representa um valor nulo do banco de dados)
-                if (dataReader["ID_Anamnese"] != DBNull.Value)
+                if (anamnese == null)
                 {
-                    anamnese.Anamnese = Convert.ToInt32(dataReader["ID_Anamnese"]);
-                    respostas = ListarRespostas(anamnese.Anamnese);
-                }
-                else
-                {
-                    // Lidar com a situação em que ID_Anamnese é nulo, se necessário
-                    // Aqui você pode atribuir um valor padrão ou decidir o que fazer com anamnese.Anamnese
-                    anamnese.Anamnese = 0; // Exemplo: atribuir 0 como valor padrão
+                    anamnese = new RespostaAnamneseDTO
+                    {
+                        ID = Convert.ToInt32(dataReader["ID_RespostaAnamnese"]),
+                        DataRealizada = Convert.ToDateTime(dataReader["dataRealizada"]),
+                        Anamnese = anamneseId,
+                        Respostas = new List<RespostaDTO>()
+                    };
+                    anamneses.Add(anamnese);
                 }
 
-                anamnese.Respostas = respostas;
-                anamneses.Add(anamnese);
+                var resposta = new RespostaDTO
+                {
+                    Resposta = dataReader["Resposta"].ToString(),
+                    Pergunta = dataReader["Valor"].ToString()
+                };
+
+                anamnese.Respostas.Add(resposta);
             }
 
             conexao.Close();
