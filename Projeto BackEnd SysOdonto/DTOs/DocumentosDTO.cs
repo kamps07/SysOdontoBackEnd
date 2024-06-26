@@ -3,14 +3,13 @@
     public class DocumentosDTO
     {
         public class DocumentoDTO
-{
-    public int Id { get; set; }
-    public string Titulo { get; set; }
-    public string Conteudo { get; set; }
-    public string? PDF { get; set; }
-    public string? Base64 { get; set; }
+        {
+            public int Id { get; set; }
+            public int Paciente { get; set; }
+            public string Titulo { get; set; }
+            public string Descricao { get; set; }
+            public string? Link { get; set; }
+            public DateTime? DataUpload { get; set; }
         }
-
-
     }
 }

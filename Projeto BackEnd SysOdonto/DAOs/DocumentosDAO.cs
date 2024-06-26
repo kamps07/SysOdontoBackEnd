@@ -1,63 +1,51 @@
-﻿
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using Projeto_BackEnd_SysOdonto.DTOs;
 using System;
-using System.Collections.Generic;
 using static Projeto_BackEnd_SysOdonto.DAOs.DocumentosDTO;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Projeto_BackEnd_SysOdonto.DAOs
 {
     public class DocumentosDAO
     {
-        public void Inserir(DocumentoDTO documento)
+        public void Inserir(AdicionarDocumentosDTO request)
         {
             using (var conexao = ConnectionFactory.Build())
             {
                 conexao.Open();
 
-                var query = @"INSERT INTO Documentos (Titulo, Conteudo, PDF) VALUES (@titulo, @conteudo, @pdf)";
-
-                using (var comando = new MySqlCommand(query, conexao))
+                foreach (var documento in request.Documentos)
                 {
-                    comando.Parameters.AddWithValue("@titulo", documento.Titulo);
-                    comando.Parameters.AddWithValue("@conteudo", documento.Conteudo);
-                    comando.Parameters.AddWithValue("@pdf", documento.PDF);
 
-                    comando.ExecuteNonQuery();
+                    var query = @"INSERT INTO Documentos (Titulo, Descricao, Link, DataUpload, Paciente) VALUES (@titulo, @desc, @link, @data, @paciente)";
+
+                    using (var comando = new MySqlCommand(query, conexao))
+                    {
+                        comando.Parameters.AddWithValue("@titulo", documento.Titulo);
+                        comando.Parameters.AddWithValue("@desc", request.Descricao);
+                        comando.Parameters.AddWithValue("@link", documento.Link);
+                        comando.Parameters.AddWithValue("@data", DateTime.Now);
+                        comando.Parameters.AddWithValue("@paciente", request.Paciente);
+
+                        comando.ExecuteNonQuery();
+                    }
+
                 }
             }
         }
 
-        public bool VerificarDocumentoExistente(string titulo)
-        {
-            using (var conexao = ConnectionFactory.Build())
-            {
-                conexao.Open();
-
-                var query = "SELECT COUNT(*) FROM Documentos WHERE Titulo = @titulo";
-
-                using (var comando = new MySqlCommand(query, conexao))
-                {
-                    comando.Parameters.AddWithValue("@titulo", titulo);
-
-                    var count = (Int64)comando.ExecuteScalar();
-
-                    return count > 0;
-                }
-            }
-        }
-
-        public List<DocumentoDTO> ListarDocumentos()
+        public List<DocumentoDTO> ListarDocumentos(int paciente)
         {
             var documentos = new List<DocumentoDTO>();
 
             using (var conexao = ConnectionFactory.Build())
             {
                 conexao.Open();
-                var query = "SELECT * FROM Documentos";
+                var query = "SELECT * FROM Documentos WHERE Paciente = @paciente";
 
                 using (var comando = new MySqlCommand(query, conexao))
                 {
+                    comando.Parameters.AddWithValue("@paciente", paciente);
                     using (var dataReader = comando.ExecuteReader())
                     {
                         while (dataReader.Read())
@@ -66,8 +54,11 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
                             {
                                 Id = Convert.ToInt32(dataReader["Id"]),
                                 Titulo = dataReader["Titulo"].ToString(),
-                                Conteudo = dataReader["Conteudo"].ToString(),
-                                PDF = dataReader["PDF"].ToString()
+                                Descricao = dataReader["Descricao"].ToString(),
+                                Link = dataReader["Link"].ToString(),
+                                Paciente = Convert.ToInt32(dataReader["Paciente"]),
+                                DataUpload = DateTime.ParseExact(dataReader["DataUpload"].ToString(), "dd/MM/yyyy HH:mm:ss", null)
+
                             };
 
                             documentos.Add(documento);
@@ -80,7 +71,3 @@ namespace Projeto_BackEnd_SysOdonto.DAOs
         }
     }
 }
-
-
-
-

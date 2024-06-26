@@ -5,7 +5,7 @@
     {
         public static MySqlConnection Build()
         {
-            var connectionString = "Server=sysodontoetec.mysql.database.azure.com;Database=sysodonto;Uid=cadUsuario;Pwd=SysOdonto*;";
+            var connectionString = "Server=localhost;Database=sysodonto;Uid=root;Pwd=root;";
             return new MySqlConnection(connectionString);
         }
     }
